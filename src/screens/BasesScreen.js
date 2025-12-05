@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     },
     townHallText: {
         color: '#facc15',
-        fontSize: 18,
+        fontSize: 16,
         textAlign: 'center',
         fontFamily: 'LilitaOne',
     },
@@ -251,16 +251,9 @@ const styles = StyleSheet.create({
 
     // estilo para el título centrado en el header seleccionado
     headerTitleSelected: {
-        flex: 1,
-        textAlign: 'center',
         color: '#facc15',
-        fontSize: 28,
+        fontSize: 18,
         fontFamily: 'LilitaOne',
-    },
-    backButtonText: {
-        color: '#facc15',
-        fontFamily: 'LilitaOne',
-        fontSize: 16,
     },
     // Contenedor y estilo para la vista del nivel seleccionado
     selectedContainer: {
@@ -279,12 +272,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     basesList: {
-        padding: 15,
+        paddingTop: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
     },
     baseCard: {
         backgroundColor: '#1a1a1a',
         borderRadius: 12,
-        marginBottom: 20,
+        marginBottom: 15,
         overflow: 'hidden',
     },
     baseImage: {
@@ -303,7 +298,7 @@ const styles = StyleSheet.create({
     },
     baseType: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'LilitaOne',
         textTransform: 'capitalize',
     },
@@ -335,6 +330,6 @@ const styles = StyleSheet.create({
         color: '#999',
         textAlign: 'center',
         fontFamily: 'LilitaOne',
-        fontSize: 18,
+        fontSize: 16,
     },
 });
