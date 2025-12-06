@@ -1,24 +1,47 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ColaborarScreen() {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Colaborar</Text>
-        </View>
+        <SafeAreaView style={styles.container} edges={['top']}>
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Colaborar</Text>
+                <Text style={styles.headerSubtitle}>Escribenos un mensaje</Text>
+            </View>
+            <View style={styles.content}>
+                {/* Contenido futuro aquí */}
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#1e1e1e',
+        backgroundColor: '#0a0a0a',
     },
-    text: {
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
+    header: {
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: '#0a0a0a',
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
     },
+    headerTitle: {
+        color: '#facc15',
+        fontSize: 28,
+        marginBottom: 5,
+        fontFamily: 'LilitaOne',
+    },
+    headerSubtitle: {
+        color: '#999',
+        fontSize: 14,
+        fontFamily: 'LilitaOne',
+    },
+    content: {
+        flex: 1,
+        padding: 15,
+    }
 });

@@ -29,22 +29,31 @@ export default function BasesScreen() {
     const townHalls = Array.from({ length: 16 }, (_, i) => i + 3);
     // Estado para nivel seleccionado
     const [selectedLevel, setSelectedLevel] = useState(null);
+    const [selectedType, setSelectedType] = useState('Todos');
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
 
     useEffect(() => {
         if (selectedLevel) {
             fetchBases();
         }
-    }, [selectedLevel]);
+    }, [selectedLevel, selectedType]);
 
     const fetchBases = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('bases')
                 .select('*')
                 .eq('level_th', selectedLevel);
+
+            if (selectedType !== 'Todos') {
+                query = query.eq('type', selectedType);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
             setBases(data || []);
@@ -88,7 +97,10 @@ export default function BasesScreen() {
                 key={level}
                 style={styles.card}
                 activeOpacity={0.7}
-                onPress={() => setSelectedLevel(level)}
+                onPress={() => {
+                    setSelectedLevel(level);
+                    setSelectedType('Todos'); // Reset filter when changing level
+                }}
             >
                 <View style={styles.cardContent}>
                     {/* Imagen del ayuntamiento */}
@@ -113,11 +125,40 @@ export default function BasesScreen() {
         <SafeAreaView style={styles.container} edges={['top']}>
             {/* Header */}
             {selectedLevel !== null ? (
-                <View style={styles.headerSelected}>
-                    <TouchableOpacity onPress={() => setSelectedLevel(null)} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color="#facc15" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
+                <View>
+                    <View style={styles.headerSelected}>
+                        <TouchableOpacity onPress={() => setSelectedLevel(null)} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={24} color="#facc15" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
+                        <View style={{ width: 24 }} />
+                    </View>
+                    {/* Filtros */}
+                    <View style={styles.filterContainer}>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.filterContent}
+                        >
+                            {filterOptions.map((type) => (
+                                <TouchableOpacity
+                                    key={type}
+                                    style={[
+                                        styles.filterButton,
+                                        selectedType === type && styles.filterButtonActive
+                                    ]}
+                                    onPress={() => setSelectedType(type)}
+                                >
+                                    <Text style={[
+                                        styles.filterText,
+                                        selectedType === type && styles.filterTextActive
+                                    ]}>
+                                        {type}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
                 </View>
             ) : (
                 <View style={styles.header}>
@@ -151,7 +192,11 @@ export default function BasesScreen() {
                             keyExtractor={item => item.id.toString()}
                             contentContainerStyle={styles.basesList}
                             ListEmptyComponent={
-                                <Text style={styles.emptyText}>No hay bases disponibles para este nivel.</Text>
+                                <Text style={styles.emptyText}>
+                                    {selectedType === 'Todos'
+                                        ? "No hay bases disponibles para este nivel."
+                                        : "No hay bases disponibles para este filtro."}
+                                </Text>
                             }
                         />
                     )}
@@ -239,21 +284,49 @@ const styles = StyleSheet.create({
     headerSelected: {
         flexDirection: 'row',
         alignItems: 'center',
-        // keep space-between so back button stays left, title will be centered via flex
         justifyContent: 'space-between',
         paddingHorizontal: 15,
         paddingTop: 15,
         paddingBottom: 15,
         backgroundColor: '#0a0a0a',
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
+        // borderBottomWidth: 1, // Removed to blend with filters
+        // borderBottomColor: '#333',
     },
-
-    // estilo para el título centrado en el header seleccionado
     headerTitleSelected: {
         color: '#facc15',
         fontSize: 18,
         fontFamily: 'LilitaOne',
+    },
+    // Estilos para los filtros
+    filterContainer: {
+        backgroundColor: '#0a0a0a',
+        paddingBottom: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    filterContent: {
+        paddingHorizontal: 15,
+        gap: 10,
+    },
+    filterButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: '#1a1a1a',
+        borderWidth: 1,
+        borderColor: '#333',
+    },
+    filterButtonActive: {
+        backgroundColor: '#facc15',
+        borderColor: '#facc15',
+    },
+    filterText: {
+        color: '#999',
+        fontFamily: 'LilitaOne',
+        fontSize: 14,
+    },
+    filterTextActive: {
+        color: '#000',
     },
     // Contenedor y estilo para la vista del nivel seleccionado
     selectedContainer: {
