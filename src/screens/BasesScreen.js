@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal } from 'react-native';
 import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Mapeo de imágenes de ayuntamientos
 const townHallImages = {
-    3: require('../../assets/townhalls/level3.png'),
-    4: require('../../assets/townhalls/level4.png'),
-    5: require('../../assets/townhalls/level5.png'),
-    6: require('../../assets/townhalls/level6.png'),
-    7: require('../../assets/townhalls/level7.png'),
-    8: require('../../assets/townhalls/level8.png'),
-    9: require('../../assets/townhalls/level9.png'),
-    10: require('../../assets/townhalls/level10.png'),
-    11: require('../../assets/townhalls/level11.png'),
-    12: require('../../assets/townhalls/level12.png'),
-    13: require('../../assets/townhalls/level13.png'),
-    14: require('../../assets/townhalls/level14.png'),
-    15: require('../../assets/townhalls/level15.png'),
-    16: require('../../assets/townhalls/level16.png'),
-    17: require('../../assets/townhalls/level17.png'),
-    18: require('../../assets/townhalls/level18.png'),
+    3: require('../../assets/townhalls/level3.webp'),
+    4: require('../../assets/townhalls/level4.webp'),
+    5: require('../../assets/townhalls/level5.webp'),
+    6: require('../../assets/townhalls/level6.webp'),
+    7: require('../../assets/townhalls/level7.webp'),
+    8: require('../../assets/townhalls/level8.webp'),
+    9: require('../../assets/townhalls/level9.webp'),
+    10: require('../../assets/townhalls/level10.webp'),
+    11: require('../../assets/townhalls/level11.webp'),
+    12: require('../../assets/townhalls/level12.webp'),
+    13: require('../../assets/townhalls/level13.webp'),
+    14: require('../../assets/townhalls/level14.webp'),
+    15: require('../../assets/townhalls/level15.webp'),
+    16: require('../../assets/townhalls/level16.webp'),
+    17: require('../../assets/townhalls/level17.webp'),
+    18: require('../../assets/townhalls/level18.webp'),
 };
 
 export default function BasesScreen() {
@@ -32,6 +32,7 @@ export default function BasesScreen() {
     const [selectedType, setSelectedType] = useState('Todos');
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
 
@@ -39,7 +40,7 @@ export default function BasesScreen() {
         if (selectedLevel) {
             fetchBases();
         }
-    }, [selectedLevel, selectedType]);
+    }, [selectedLevel]);
 
     const fetchBases = async () => {
         setLoading(true);
@@ -49,9 +50,10 @@ export default function BasesScreen() {
                 .select('*')
                 .eq('level_th', selectedLevel);
 
-            if (selectedType !== 'Todos') {
-                query = query.eq('type', selectedType);
-            }
+            // Removed server-side filtering by type to allow client-side filtering
+            // if (selectedType !== 'Todos') {
+            //     query = query.eq('type', selectedType);
+            // }
 
             const { data, error } = await query;
 
@@ -83,7 +85,10 @@ export default function BasesScreen() {
                     >
                         <Text style={styles.copyButtonText}>Copiar Base</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.actionButton, styles.detailsButton]}>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.detailsButton]}
+                        onPress={() => setModalVisible(true)}
+                    >
                         <Text style={styles.detailsButtonText}>Detalles</Text>
                     </TouchableOpacity>
                 </View>
@@ -108,7 +113,7 @@ export default function BasesScreen() {
                         <Image
                             source={townHallImages[level]}
                             style={styles.townHallImage}
-                            resizeMode="cover"
+                            resizeMode="contain"
                         />
                     </View>
 
@@ -187,10 +192,11 @@ export default function BasesScreen() {
                         </View>
                     ) : (
                         <FlatList
-                            data={bases}
+                            data={bases.filter(base => selectedType === 'Todos' || base.type === selectedType)}
                             renderItem={renderBaseItem}
                             keyExtractor={item => item.id.toString()}
                             contentContainerStyle={styles.basesList}
+                            showsVerticalScrollIndicator={false}
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>
                                     {selectedType === 'Todos'
@@ -202,6 +208,27 @@ export default function BasesScreen() {
                     )}
                 </View>
             )}
+            {/* Modal de En Desarrollo */}
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+                animationType="fade"
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalEmoji}>👨‍💻</Text>
+                        <Text style={styles.modalTitle}>En desarrollo</Text>
+                        <Text style={styles.modalMessage}>Estamos trabajando en esta funcionalidad.</Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setModalVisible(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Entendido</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView >
     );
 }
@@ -259,10 +286,11 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         width: '100%',
-        aspectRatio: 1,
+        height: 160, // Fixed height instead of aspect ratio
         backgroundColor: '#2a2a2a',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 10, // Add padding to prevent edge touching
         borderBottomWidth: 2,
         borderBottomColor: '#facc15',
     },
@@ -404,5 +432,49 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'LilitaOne',
         fontSize: 16,
+    },
+    // Estilos del Modal
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#1a1a1a',
+        borderRadius: 20,
+        padding: 15,
+        alignItems: 'center',
+        width: '80%',
+        borderWidth: 1,
+        borderColor: '#333',
+    },
+    modalEmoji: {
+        fontSize: 50,
+        marginBottom: 15,
+    },
+    modalTitle: {
+        color: '#facc15',
+        fontSize: 28,
+        fontFamily: 'LilitaOne',
+        marginBottom: 5,
+    },
+    modalMessage: {
+        color: '#ccc',
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 15,
+        fontFamily: 'LilitaOne',
+    },
+    modalButton: {
+        backgroundColor: '#facc15',
+        paddingHorizontal: 30,
+        paddingVertical: 12,
+        borderRadius: 25,
+    },
+    modalButtonText: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'LilitaOne',
     },
 });

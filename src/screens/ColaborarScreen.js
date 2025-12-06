@@ -10,7 +10,11 @@ export default function ColaborarScreen() {
                 <Text style={styles.headerSubtitle}>Escribenos un mensaje</Text>
             </View>
             <View style={styles.content}>
-                {/* Contenido futuro aquí */}
+                <View style={styles.developmentContainer}>
+                    <Text style={styles.emoji}>👨‍💻</Text>
+                    <Text style={styles.title}>En desarrollo</Text>
+                    <Text style={styles.message}>Estamos trabajando en esta funcionalidad.</Text>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -43,5 +47,27 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         padding: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    developmentContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emoji: {
+        fontSize: 50,
+        marginBottom: 15,
+    },
+    title: {
+        color: '#facc15',
+        fontSize: 28,
+        fontFamily: 'LilitaOne',
+        marginBottom: 5,
+    },
+    message: {
+        color: '#ccc',
+        fontSize: 14,
+        textAlign: 'center',
+        fontFamily: 'LilitaOne',
     }
 });
