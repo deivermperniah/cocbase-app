@@ -18,7 +18,7 @@ function MainTabs() {
   const TAB_BAR_HEIGHT = 60;
   const DEFAULT_PADDING_BOTTOM = 10;
 
-  const paddingBottom = insets.bottom > 0 ? insets.bottom : DEFAULT_PADDING_BOTTOM;
+  const paddingBottom = insets.bottom > 0 ? insets.bottom + 10 : DEFAULT_PADDING_BOTTOM;
   const height = TAB_BAR_HEIGHT + paddingBottom;
 
   return (
