@@ -33,8 +33,19 @@ export default function BasesScreen() {
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [selectedBase, setSelectedBase] = useState(null);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
+
+    const filterDescriptions = {
+        'Todos': 'Todas las bases disponibles para este nivel de ayuntamiento.',
+        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
+        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
+        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
+        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
+    };
+
+    const [infoModalVisible, setInfoModalVisible] = useState(false);
 
     useEffect(() => {
         if (selectedLevel) {
@@ -87,7 +98,10 @@ export default function BasesScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.actionButton, styles.detailsButton]}
-                        onPress={() => setModalVisible(true)}
+                        onPress={() => {
+                            setSelectedBase(item);
+                            setModalVisible(true);
+                        }}
                     >
                         <Text style={styles.detailsButtonText}>Detalles</Text>
                     </TouchableOpacity>
@@ -136,7 +150,9 @@ export default function BasesScreen() {
                             <Ionicons name="arrow-back" size={24} color="#facc15" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
-                        <View style={{ width: 24 }} />
+                        <TouchableOpacity onPress={() => setInfoModalVisible(true)} style={styles.infoButton}>
+                            <Ionicons name="information-circle-outline" size={24} color="#facc15" />
+                        </TouchableOpacity>
                     </View>
                     {/* Filtros */}
                     <View style={styles.filterContainer}>
@@ -208,7 +224,7 @@ export default function BasesScreen() {
                     )}
                 </View>
             )}
-            {/* Modal de En Desarrollo */}
+            {/* Modal de Detalles de Base */}
             <Modal
                 transparent={true}
                 visible={modalVisible}
@@ -217,12 +233,53 @@ export default function BasesScreen() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalEmoji}>👨‍💻</Text>
-                        <Text style={styles.modalTitle}>En desarrollo</Text>
-                        <Text style={styles.modalMessage}>Estamos trabajando en esta funcionalidad.</Text>
+                        <Text style={styles.modalTitle}>Detalles</Text>
+
+                        {selectedBase && (
+                            <View style={styles.detailsContainer}>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Diseñador:</Text>
+                                    <Text style={styles.detailValue}>Deiver Pernia</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Publicado:</Text>
+                                    <Text style={styles.detailValue}>
+                                        {new Date(selectedBase.created_at).toLocaleDateString('es-ES', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                        })}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+
                         <TouchableOpacity
                             style={styles.modalButton}
                             onPress={() => setModalVisible(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Cerrar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Modal de Información de Filtro */}
+            <Modal
+                transparent={true}
+                visible={infoModalVisible}
+                animationType="fade"
+                onRequestClose={() => setInfoModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>{selectedType}</Text>
+                        <Text style={styles.modalMessage}>
+                            {filterDescriptions[selectedType]}
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setInfoModalVisible(false)}
                         >
                             <Text style={styles.modalButtonText}>Entendido</Text>
                         </TouchableOpacity>
@@ -322,6 +379,9 @@ const styles = StyleSheet.create({
         color: '#facc15',
         fontSize: 18,
         fontFamily: 'LilitaOne',
+    },
+    infoButton: {
+        padding: 4,
     },
     // Estilos para los filtros
     filterContainer: {
@@ -469,6 +529,29 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: '#000',
         fontSize: 14,
+        fontFamily: 'LilitaOne',
+    },
+    detailsContainer: {
+        width: '100%',
+        marginBottom: 20,
+        gap: 10,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    detailLabel: {
+        color: '#999',
+        fontSize: 16,
+        fontFamily: 'LilitaOne',
+    },
+    detailValue: {
+        color: '#fff',
+        fontSize: 16,
         fontFamily: 'LilitaOne',
     },
 });
