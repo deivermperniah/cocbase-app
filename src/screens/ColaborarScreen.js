@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     message: {
-        color: '#ccc',
+        color: '#ffffffff',
         fontSize: 14,
         textAlign: 'center',
         fontFamily: 'LilitaOne',

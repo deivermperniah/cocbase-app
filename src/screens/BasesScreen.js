@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     cardFooter: {
-        padding: 12,
+        padding: 10,
         backgroundColor: '#1a1a1a',
     },
     townHallText: {
@@ -317,8 +317,6 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         paddingBottom: 15,
         backgroundColor: '#0a0a0a',
-        // borderBottomWidth: 1, // Removed to blend with filters
-        // borderBottomColor: '#333',
     },
     headerTitleSelected: {
         color: '#facc15',
@@ -328,7 +326,7 @@ const styles = StyleSheet.create({
     // Estilos para los filtros
     filterContainer: {
         backgroundColor: '#0a0a0a',
-        paddingBottom: 10,
+        paddingBottom: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#333',
     },
@@ -341,8 +339,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 20,
         backgroundColor: '#1a1a1a',
-        borderWidth: 1,
-        borderColor: '#333',
     },
     filterButtonActive: {
         backgroundColor: '#facc15',
@@ -446,8 +442,6 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: 'center',
         width: '80%',
-        borderWidth: 1,
-        borderColor: '#333',
     },
     modalEmoji: {
         fontSize: 50,
@@ -460,7 +454,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     modalMessage: {
-        color: '#ccc',
+        color: '#ffffffff',
         fontSize: 14,
         textAlign: 'center',
         marginBottom: 15,

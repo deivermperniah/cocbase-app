@@ -36,7 +36,7 @@ function MainTabs() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#facc15',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#999999',
         tabBarStyle: {
           backgroundColor: '#121212',
           borderTopColor: '#333',
