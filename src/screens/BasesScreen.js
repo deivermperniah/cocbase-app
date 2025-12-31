@@ -652,12 +652,12 @@ const styles = StyleSheet.create({
     },
     infoTypeTitle: {
         color: '#facc15',
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'LilitaOne',
         marginBottom: 5,
     },
     infoTypeDescription: {
-        color: '#ccc',
+        color: '#ffffffff',
         fontSize: 14,
         fontFamily: 'LilitaOne',
         lineHeight: 18,

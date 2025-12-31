@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 18,
         textAlign: 'center',
-        marginBottom: 30,
+        marginBottom: 15,
         fontFamily: 'LilitaOne',
         lineHeight: 24,
         paddingHorizontal: 20,
