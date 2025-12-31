@@ -350,13 +350,6 @@ export default function BasesScreen() {
                 onRequestClose={() => setImageModalVisible(false)}
             >
                 <SafeAreaView style={styles.zoomModalContainer}>
-                    <TouchableOpacity
-                        style={styles.closeZoomButton}
-                        onPress={() => setImageModalVisible(false)}
-                    >
-                        <Ionicons name="close" size={24} color="#fff" />
-                    </TouchableOpacity>
-
                     <ScrollView
                         maximumZoomScale={5}
                         minimumZoomScale={1}
@@ -364,14 +357,25 @@ export default function BasesScreen() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.zoomImageWrapper}
                     >
-                        {selectedImageUrl && (
-                            <Image
-                                source={{ uri: selectedImageUrl }}
-                                style={styles.zoomedImage}
-                                resizeMode="contain"
-                            />
-                        )}
+                        <View style={styles.imageContainerZoom}>
+                            {selectedImageUrl && (
+                                <Image
+                                    source={{ uri: selectedImageUrl }}
+                                    style={styles.zoomedImage}
+                                    resizeMode="contain"
+                                />
+                            )}
+                        </View>
                     </ScrollView>
+
+                    <View style={styles.zoomFooter}>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setImageModalVisible(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Cerrar</Text>
+                        </TouchableOpacity>
+                    </View>
                 </SafeAreaView>
             </Modal>
         </SafeAreaView >
@@ -652,12 +656,12 @@ const styles = StyleSheet.create({
     },
     infoTypeTitle: {
         color: '#facc15',
-        fontSize: 16,
+        fontSize: 18,
         fontFamily: 'LilitaOne',
         marginBottom: 5,
     },
     infoTypeDescription: {
-        color: '#ffffffff',
+        color: '#ccc',
         fontSize: 14,
         fontFamily: 'LilitaOne',
         lineHeight: 18,
@@ -696,22 +700,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000',
     },
-    closeZoomButton: {
-        position: 'absolute',
-        top: 15,
-        right: 15,
-        zIndex: 10,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 20,
+    zoomFooter: {
+        paddingVertical: 20,
+        alignItems: 'center',
     },
     zoomImageWrapper: {
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
+    imageContainerZoom: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     zoomedImage: {
         width: '100%',
         height: '100%',
+        aspectRatio: 16 / 9, // Ajustar según el formato general de las bases
     },
     zoomIconContainer: {
         position: 'absolute',
