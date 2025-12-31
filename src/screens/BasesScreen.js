@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
     },
     detailsContainer: {
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 15,
         gap: 10,
     },
     detailRow: {

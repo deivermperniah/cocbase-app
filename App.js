@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 import BasesScreen from './src/screens/BasesScreen';
 import ColaborarScreen from './src/screens/ColaborarScreen';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const Tab = createBottomTabNavigator();
 
@@ -61,20 +65,28 @@ export default function App() {
     LilitaOne: require('./assets/fonts/LilitaOne-Regular.ttf'),
   });
 
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      // This tells the splash screen to hide immediately! If we call this after
+      // `setAppIsReady`, then we may see a blank screen while the app is
+      // loading its initial state and rendering its first pixels. So instead,
+      // we hide it immediately after the fonts are loaded and the UI is ready.
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#facc15" />
-      </View>
-    );
+    return null;
   }
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <MainTabs />
-      </NavigationContainer>
+      <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          <MainTabs />
+        </NavigationContainer>
+      </View>
     </SafeAreaProvider>
   );
 }
