@@ -354,10 +354,16 @@ export default function BasesScreen() {
                         style={styles.closeZoomButton}
                         onPress={() => setImageModalVisible(false)}
                     >
-                        <Ionicons name="close" size={30} color="#fff" />
+                        <Ionicons name="close" size={24} color="#fff" />
                     </TouchableOpacity>
 
-                    <View style={styles.zoomImageWrapper}>
+                    <ScrollView
+                        maximumZoomScale={5}
+                        minimumZoomScale={1}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.zoomImageWrapper}
+                    >
                         {selectedImageUrl && (
                             <Image
                                 source={{ uri: selectedImageUrl }}
@@ -365,7 +371,7 @@ export default function BasesScreen() {
                                 resizeMode="contain"
                             />
                         )}
-                    </View>
+                    </ScrollView>
                 </SafeAreaView>
             </Modal>
         </SafeAreaView >
@@ -461,9 +467,6 @@ const styles = StyleSheet.create({
         color: '#facc15',
         fontSize: 18,
         fontFamily: 'LilitaOne',
-    },
-    infoButton: {
-        padding: 4,
     },
     // Estilos para los filtros
     filterContainer: {
@@ -695,15 +698,14 @@ const styles = StyleSheet.create({
     },
     closeZoomButton: {
         position: 'absolute',
-        top: 40,
-        right: 20,
+        top: 15,
+        right: 15,
         zIndex: 10,
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 20,
-        padding: 5,
     },
     zoomImageWrapper: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
