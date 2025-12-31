@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Mapeo de imágenes de ayuntamientos
 const townHallImages = {
@@ -35,6 +36,7 @@ export default function BasesScreen() {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedBase, setSelectedBase] = useState(null);
+    const [isOffline, setIsOffline] = useState(false);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
 
@@ -54,25 +56,43 @@ export default function BasesScreen() {
         }
     }, [selectedLevel]);
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (selectedLevel !== null) {
+                    setSelectedLevel(null);
+                    return true;
+                }
+                return false;
+            };
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () => subscription.remove();
+        }, [selectedLevel])
+    );
+
     const fetchBases = async () => {
         setLoading(true);
+        setIsOffline(false);
         try {
             let query = supabase
                 .from('bases')
                 .select('*')
                 .eq('level_th', selectedLevel);
 
-            // Removed server-side filtering by type to allow client-side filtering
-            // if (selectedType !== 'Todos') {
-            //     query = query.eq('type', selectedType);
-            // }
-
             const { data, error } = await query;
 
-            if (error) throw error;
+            if (error) {
+                setIsOffline(true);
+                return;
+            }
+
             setBases(data || []);
+            setIsOffline(false);
         } catch (error) {
             console.error('Error fetching bases:', error);
+            setIsOffline(true);
         } finally {
             setLoading(false);
         }
@@ -214,6 +234,14 @@ export default function BasesScreen() {
                         <View style={styles.loadingContainer}>
                             <ActivityIndicator size="large" color="#facc15" />
                             <Text style={styles.loadingText}>Cargando...</Text>
+                        </View>
+                    ) : isOffline ? (
+                        <View style={styles.offlineContainer}>
+                            <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
+                            <Text style={styles.offlineText}>Sin conexión</Text>
+                            <TouchableOpacity style={styles.retryButton} onPress={fetchBases}>
+                                <Text style={styles.retryButtonText}>Reintentar</Text>
+                            </TouchableOpacity>
                         </View>
                     ) : (
                         <FlatList
@@ -509,7 +537,7 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         color: '#facc15',
-        fontSize: 28,
+        fontSize: 18,
         fontFamily: 'LilitaOne',
         marginBottom: 5,
     },
@@ -566,5 +594,34 @@ const styles = StyleSheet.create({
         fontFamily: 'LilitaOne',
         textAlign: 'left',
         lineHeight: 20,
+    },
+    // Estilos para modo sin conexión
+    offlineContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 15,
+    },
+    offlineText: {
+        color: '#fff',
+        fontSize: 18,
+        fontFamily: 'LilitaOne',
+        marginBottom: 15,
+    },
+    retryButton: {
+        backgroundColor: '#facc15',
+        paddingHorizontal: 30,
+        paddingVertical: 12,
+        borderRadius: 25,
+        elevation: 3,
+        shadowColor: '#facc15',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
+    retryButtonText: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'LilitaOne',
     },
 });
