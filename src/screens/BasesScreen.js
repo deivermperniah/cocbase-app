@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -45,7 +46,7 @@ export default function BasesScreen() {
         'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
     };
 
-    const [infoModalVisible, setInfoModalVisible] = useState(false);
+    const [showDescription, setShowDescription] = useState(false);
 
     useEffect(() => {
         if (selectedLevel) {
@@ -150,8 +151,15 @@ export default function BasesScreen() {
                             <Ionicons name="arrow-back" size={24} color="#facc15" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
-                        <TouchableOpacity onPress={() => setInfoModalVisible(true)} style={styles.infoButton}>
-                            <Ionicons name="information-circle-outline" size={24} color="#facc15" />
+                        <TouchableOpacity
+                            onPress={() => setShowDescription(!showDescription)}
+                            style={styles.infoButton}
+                        >
+                            <Ionicons
+                                name={showDescription ? "close-circle-outline" : "information-circle-outline"}
+                                size={24}
+                                color="#facc15"
+                            />
                         </TouchableOpacity>
                     </View>
                     {/* Filtros */}
@@ -180,6 +188,7 @@ export default function BasesScreen() {
                             ))}
                         </ScrollView>
                     </View>
+
                 </View>
             ) : (
                 <View style={styles.header}>
@@ -213,6 +222,20 @@ export default function BasesScreen() {
                             keyExtractor={item => item.id.toString()}
                             contentContainerStyle={styles.basesList}
                             showsVerticalScrollIndicator={false}
+                            ListHeaderComponent={
+                                showDescription ? (
+                                    <LinearGradient
+                                        colors={['#facc15', 'rgba(255, 255, 255, 0.9)']}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 1 }}
+                                        style={styles.descriptionContainer}
+                                    >
+                                        <Text style={styles.descriptionText}>
+                                            {filterDescriptions[selectedType]}
+                                        </Text>
+                                    </LinearGradient>
+                                ) : null
+                            }
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>
                                     {selectedType === 'Todos'
@@ -259,29 +282,6 @@ export default function BasesScreen() {
                             onPress={() => setModalVisible(false)}
                         >
                             <Text style={styles.modalButtonText}>Cerrar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Modal de Información de Filtro */}
-            <Modal
-                transparent={true}
-                visible={infoModalVisible}
-                animationType="fade"
-                onRequestClose={() => setInfoModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>{selectedType}</Text>
-                        <Text style={styles.modalMessage}>
-                            {filterDescriptions[selectedType]}
-                        </Text>
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setInfoModalVisible(false)}
-                        >
-                            <Text style={styles.modalButtonText}>Entendido</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     modalMessage: {
         color: '#ffffffff',
         fontSize: 14,
-        textAlign: 'center',
+        textAlign: 'justify',
         marginBottom: 15,
         fontFamily: 'LilitaOne',
     },
@@ -553,5 +553,18 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontFamily: 'LilitaOne',
+    },
+    // Estilos para la descripción desplegable
+    descriptionContainer: {
+        marginBottom: 15,
+        padding: 15,
+        borderRadius: 12,
+    },
+    descriptionText: {
+        color: '#000000',
+        fontSize: 14,
+        fontFamily: 'LilitaOne',
+        textAlign: 'left',
+        lineHeight: 20,
     },
 });

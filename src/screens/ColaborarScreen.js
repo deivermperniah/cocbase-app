@@ -1,8 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function ColaborarScreen() {
+    const openWhatsApp = () => {
+        // Reemplaza con tu número de WhatsApp
+        Linking.openURL('https://wa.me/51943458410');
+    };
+
+    const openTelegram = () => {
+        // Reemplaza con tu usuario de Telegram
+        Linking.openURL('https://t.me/deivermperniah');
+    };
+
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
@@ -10,11 +21,19 @@ export default function ColaborarScreen() {
                 <Text style={styles.headerSubtitle}>Escribenos un mensaje</Text>
             </View>
             <View style={styles.content}>
-                <View style={styles.developmentContainer}>
-                    <Text style={styles.emoji}>👨‍💻</Text>
-                    <Text style={styles.title}>En desarrollo</Text>
-                    <Text style={styles.message}>Estamos trabajando en esta funcionalidad.</Text>
-                </View>
+                <Text style={styles.description}>
+                    ¡Comparte tus mejores diseños con la comunidad! Tu base podría ser la próxima en ayudar a miles de jugadores.
+                </Text>
+
+                <TouchableOpacity style={[styles.button, styles.whatsappButton]} onPress={openWhatsApp}>
+                    <FontAwesome name="whatsapp" size={30} color="white" />
+                    <Text style={styles.buttonText}>WhatsApp</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.button, styles.telegramButton]} onPress={openTelegram}>
+                    <FontAwesome name="telegram" size={30} color="white" />
+                    <Text style={styles.buttonText}>Telegram</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -50,24 +69,40 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    developmentContainer: {
+    description: {
+        color: '#ffffff',
+        fontSize: 18,
+        textAlign: 'center',
+        marginBottom: 30,
+        fontFamily: 'LilitaOne',
+        lineHeight: 24,
+        paddingHorizontal: 20,
+    },
+    button: {
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    emoji: {
-        fontSize: 50,
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 12,
         marginBottom: 15,
+        width: '90%',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
-    title: {
-        color: '#facc15',
-        fontSize: 28,
-        fontFamily: 'LilitaOne',
-        marginBottom: 5,
+    whatsappButton: {
+        backgroundColor: '#25D366',
     },
-    message: {
-        color: '#ffffffff',
-        fontSize: 14,
-        textAlign: 'center',
+    telegramButton: {
+        backgroundColor: '#0088cc',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
         fontFamily: 'LilitaOne',
+        marginLeft: 15,
     }
 });
