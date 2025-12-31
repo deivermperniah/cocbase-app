@@ -36,6 +36,8 @@ export default function BasesScreen() {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [infoModalVisible, setInfoModalVisible] = useState(false);
+    const [imageModalVisible, setImageModalVisible] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedBase, setSelectedBase] = useState(null);
     const [isOffline, setIsOffline] = useState(false);
 
@@ -98,11 +100,22 @@ export default function BasesScreen() {
 
     const renderBaseItem = ({ item }) => (
         <View style={styles.baseCard}>
-            <Image
-                source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
-                style={styles.baseImage}
-                resizeMode="cover"
-            />
+            <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => {
+                    setSelectedImageUrl(item.url_foto);
+                    setImageModalVisible(true);
+                }}
+            >
+                <Image
+                    source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
+                    style={styles.baseImage}
+                    resizeMode="cover"
+                />
+                <View style={styles.zoomIconContainer}>
+                    <Ionicons name="expand" size={20} color="#fff" />
+                </View>
+            </TouchableOpacity>
             <View style={styles.baseInfo}>
                 <View style={styles.typeContainer}>
                     <Ionicons name="pricetag" size={20} color="#facc15" />
@@ -327,6 +340,33 @@ export default function BasesScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
+            </Modal>
+
+            {/* Modal de Zoom de Imagen */}
+            <Modal
+                visible={imageModalVisible}
+                transparent={false}
+                animationType="fade"
+                onRequestClose={() => setImageModalVisible(false)}
+            >
+                <SafeAreaView style={styles.zoomModalContainer}>
+                    <TouchableOpacity
+                        style={styles.closeZoomButton}
+                        onPress={() => setImageModalVisible(false)}
+                    >
+                        <Ionicons name="close" size={30} color="#fff" />
+                    </TouchableOpacity>
+
+                    <View style={styles.zoomImageWrapper}>
+                        {selectedImageUrl && (
+                            <Image
+                                source={{ uri: selectedImageUrl }}
+                                style={styles.zoomedImage}
+                                resizeMode="contain"
+                            />
+                        )}
+                    </View>
+                </SafeAreaView>
             </Modal>
         </SafeAreaView >
     );
@@ -647,5 +687,36 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 14,
         fontFamily: 'LilitaOne',
+    },
+    // Estilos para Zoom de Imagen
+    zoomModalContainer: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    closeZoomButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        zIndex: 10,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 20,
+        padding: 5,
+    },
+    zoomImageWrapper: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    zoomedImage: {
+        width: '100%',
+        height: '100%',
+    },
+    zoomIconContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 15,
+        padding: 6,
     },
 });
