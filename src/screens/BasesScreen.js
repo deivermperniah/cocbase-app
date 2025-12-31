@@ -35,20 +35,18 @@ export default function BasesScreen() {
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [infoModalVisible, setInfoModalVisible] = useState(false);
     const [selectedBase, setSelectedBase] = useState(null);
     const [isOffline, setIsOffline] = useState(false);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
 
     const filterDescriptions = {
-        'Todos': 'Todas las bases disponibles para este nivel de ayuntamiento.',
         'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
         'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
         'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
         'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
     };
-
-    const [showDescription, setShowDescription] = useState(false);
 
     useEffect(() => {
         if (selectedLevel) {
@@ -172,11 +170,11 @@ export default function BasesScreen() {
                         </TouchableOpacity>
                         <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
                         <TouchableOpacity
-                            onPress={() => setShowDescription(!showDescription)}
+                            onPress={() => setInfoModalVisible(true)}
                             style={styles.infoButton}
                         >
                             <Ionicons
-                                name={showDescription ? "close-circle-outline" : "information-circle-outline"}
+                                name="information-circle-outline"
                                 size={24}
                                 color="#facc15"
                             />
@@ -250,20 +248,6 @@ export default function BasesScreen() {
                             keyExtractor={item => item.id.toString()}
                             contentContainerStyle={styles.basesList}
                             showsVerticalScrollIndicator={false}
-                            ListHeaderComponent={
-                                showDescription ? (
-                                    <LinearGradient
-                                        colors={['#facc15', 'rgba(255, 255, 255, 0.9)']}
-                                        start={{ x: 0, y: 0 }}
-                                        end={{ x: 1, y: 1 }}
-                                        style={styles.descriptionContainer}
-                                    >
-                                        <Text style={styles.descriptionText}>
-                                            {filterDescriptions[selectedType]}
-                                        </Text>
-                                    </LinearGradient>
-                                ) : null
-                            }
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>
                                     {selectedType === 'Todos'
@@ -310,6 +294,36 @@ export default function BasesScreen() {
                             onPress={() => setModalVisible(false)}
                         >
                             <Text style={styles.modalButtonText}>Cerrar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Modal de Información de Tipos de Bases */}
+            <Modal
+                transparent={true}
+                visible={infoModalVisible}
+                animationType="fade"
+                onRequestClose={() => setInfoModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { width: '90%', maxHeight: '80%' }]}>
+                        <Text style={styles.modalTitle}>Tipos de bases</Text>
+
+                        <ScrollView style={styles.infoScroll} showsVerticalScrollIndicator={false}>
+                            {Object.entries(filterDescriptions).map(([type, description]) => (
+                                <View key={type} style={styles.infoItem}>
+                                    <Text style={styles.infoTypeTitle}>{type}</Text>
+                                    <Text style={styles.infoTypeDescription}>{description}</Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => setInfoModalVisible(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Entendido</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -568,7 +582,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 8,
+        paddingVertical: 5,
         borderBottomWidth: 1,
         borderBottomColor: '#333',
     },
@@ -582,18 +596,28 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'LilitaOne',
     },
-    // Estilos para la descripción desplegable
-    descriptionContainer: {
-        marginBottom: 15,
-        padding: 15,
-        borderRadius: 12,
+    // Estilos del Modal de Información
+    infoScroll: {
+        paddingTop: 5,
+        width: '100%',
     },
-    descriptionText: {
-        color: '#000000',
+    infoItem: {
+        marginBottom: 15,
+        borderLeftWidth: 3,
+        borderLeftColor: '#facc15',
+        paddingLeft: 12,
+    },
+    infoTypeTitle: {
+        color: '#facc15',
+        fontSize: 18,
+        fontFamily: 'LilitaOne',
+        marginBottom: 5,
+    },
+    infoTypeDescription: {
+        color: '#ccc',
         fontSize: 14,
         fontFamily: 'LilitaOne',
-        textAlign: 'left',
-        lineHeight: 20,
+        lineHeight: 18,
     },
     // Estilos para modo sin conexión
     offlineContainer: {
