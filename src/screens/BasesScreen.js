@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../src/lib/supabase';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
@@ -30,6 +30,7 @@ const townHallImages = {
 export default function BasesScreen() {
     // Generar array de ayuntamientos del 3 al 18
     const townHalls = Array.from({ length: 16 }, (_, i) => i + 3);
+    const insets = useSafeAreaInsets();
     // Estado para nivel seleccionado
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedType, setSelectedType] = useState('Todos');
@@ -365,10 +366,11 @@ export default function BasesScreen() {
                         }}
                         enableSwipeDown={false}
                         renderIndicator={() => null}
+                        menus={() => null}
                         onLongPress={() => setZoomButtonsVisible(!zoomButtonsVisible)}
                         onClick={() => setZoomButtonsVisible(!zoomButtonsVisible)}
                         renderHeader={() => (
-                            <View style={styles.zoomHeader}>
+                            <View style={[styles.zoomHeader, { top: insets.top + 10 }]}>
                                 <TouchableOpacity
                                     style={styles.backButtonZoom}
                                     onPress={() => {
@@ -382,7 +384,7 @@ export default function BasesScreen() {
                         )}
                         renderFooter={() => (
                             zoomButtonsVisible && selectedBase && (
-                                <View style={styles.zoomFooter}>
+                                <View style={[styles.zoomFooter, { paddingBottom: Math.max(insets.bottom, 15) }]}>
                                     <View style={styles.baseButtons}>
                                         <TouchableOpacity
                                             style={styles.actionButton}
@@ -400,7 +402,7 @@ export default function BasesScreen() {
                                 </View>
                             )
                         )}
-                        footerContainerStyle={{ bottom: 10, width: '100%' }}
+                        footerContainerStyle={{ bottom: 0, width: '100%' }}
                         backgroundColor="black"
                     />
                 </View>
