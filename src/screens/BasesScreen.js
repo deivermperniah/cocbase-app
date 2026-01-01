@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 // Mapeo de imágenes de ayuntamientos
 const townHallImages = {
@@ -350,32 +351,26 @@ export default function BasesScreen() {
                 onRequestClose={() => setImageModalVisible(false)}
             >
                 <SafeAreaView style={styles.zoomModalContainer}>
-                    <ScrollView
-                        maximumZoomScale={5}
-                        minimumZoomScale={1}
-                        showsHorizontalScrollIndicator={false}
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={styles.zoomImageWrapper}
-                    >
-                        <View style={styles.imageContainerZoom}>
-                            {selectedImageUrl && (
-                                <Image
-                                    source={{ uri: selectedImageUrl }}
-                                    style={styles.zoomedImage}
-                                    resizeMode="contain"
-                                />
+                    {selectedImageUrl && (
+                        <ImageViewer
+                            imageUrls={[{ url: selectedImageUrl }]}
+                            onCancel={() => setImageModalVisible(false)}
+                            enableSwipeDown={true}
+                            onSwipeDown={() => setImageModalVisible(false)}
+                            renderIndicator={() => null}
+                            renderFooter={() => (
+                                <View style={styles.zoomFooter}>
+                                    <TouchableOpacity
+                                        style={styles.modalButton}
+                                        onPress={() => setImageModalVisible(false)}
+                                    >
+                                        <Text style={styles.modalButtonText}>Cerrar</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )}
-                        </View>
-                    </ScrollView>
-
-                    <View style={styles.zoomFooter}>
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setImageModalVisible(false)}
-                        >
-                            <Text style={styles.modalButtonText}>Cerrar</Text>
-                        </TouchableOpacity>
-                    </View>
+                            backgroundColor="black"
+                        />
+                    )}
                 </SafeAreaView>
             </Modal>
         </SafeAreaView >
@@ -701,24 +696,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     zoomFooter: {
-        paddingVertical: 20,
+        width: Dimensions.get('window').width,
+        paddingBottom: 40,
         alignItems: 'center',
-    },
-    zoomImageWrapper: {
-        flexGrow: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-    },
-    imageContainerZoom: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    zoomedImage: {
-        width: '100%',
-        height: '100%',
-        aspectRatio: 16 / 9, // Ajustar según el formato general de las bases
     },
     zoomIconContainer: {
         position: 'absolute',
