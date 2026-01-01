@@ -5,12 +5,10 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export default function ColaborarScreen() {
     const openWhatsApp = () => {
-        // Reemplaza con tu número de WhatsApp
         Linking.openURL('https://wa.me/51943458410');
     };
 
     const openTelegram = () => {
-        // Reemplaza con tu usuario de Telegram
         Linking.openURL('https://t.me/deivermperniah');
     };
 
@@ -18,7 +16,7 @@ export default function ColaborarScreen() {
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Colaborar</Text>
-                <Text style={styles.headerSubtitle}>Escribenos un mensaje</Text>
+                <Text style={styles.headerSubtitle}>Escríbenos un mensaje</Text>
             </View>
             <View style={styles.content}>
                 <Text style={styles.description}>

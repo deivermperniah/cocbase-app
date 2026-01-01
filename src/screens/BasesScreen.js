@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler } from 'react-native';
 import { supabase } from '../../src/lib/supabase';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import ImageViewer from 'react-native-image-zoom-viewer';
 
-// Mapeo de imágenes de ayuntamientos
 const townHallImages = {
     3: require('../../assets/townhalls/level3.webp'),
     4: require('../../assets/townhalls/level4.webp'),
@@ -28,20 +25,14 @@ const townHallImages = {
 };
 
 export default function BasesScreen() {
-    // Generar array de ayuntamientos del 3 al 18
     const townHalls = Array.from({ length: 16 }, (_, i) => i + 3);
-    const insets = useSafeAreaInsets();
-    // Estado para nivel seleccionado
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedType, setSelectedType] = useState('Todos');
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [infoModalVisible, setInfoModalVisible] = useState(false);
-    const [imageModalVisible, setImageModalVisible] = useState(false);
-    const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedBase, setSelectedBase] = useState(null);
-    const [zoomButtonsVisible, setZoomButtonsVisible] = useState(false);
     const [isOffline, setIsOffline] = useState(false);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
@@ -62,14 +53,6 @@ export default function BasesScreen() {
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
-                if (zoomButtonsVisible) {
-                    setZoomButtonsVisible(false);
-                    return true;
-                }
-                if (imageModalVisible) {
-                    setImageModalVisible(false);
-                    return true;
-                }
                 if (selectedLevel !== null) {
                     setSelectedLevel(null);
                     return true;
@@ -80,7 +63,7 @@ export default function BasesScreen() {
             const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
             return () => subscription.remove();
-        }, [selectedLevel, imageModalVisible])
+        }, [selectedLevel])
     );
 
     const fetchBases = async () => {
@@ -111,24 +94,13 @@ export default function BasesScreen() {
 
     const renderBaseItem = ({ item }) => (
         <View style={styles.baseCard}>
-            <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => {
-                    setSelectedBase(item);
-                    setSelectedImageUrl(item.url_foto);
-                    setImageModalVisible(true);
-                    setZoomButtonsVisible(false); // Reset buttons state
-                }}
-            >
+            <View>
                 <Image
                     source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
                     style={styles.baseImage}
                     resizeMode="cover"
                 />
-                <View style={styles.zoomIconContainer}>
-                    <Ionicons name="expand" size={20} color="#fff" />
-                </View>
-            </TouchableOpacity>
+            </View>
             <View style={styles.baseInfo}>
                 <View style={styles.typeContainer}>
                     <Ionicons name="pricetag" size={20} color="#facc15" />
@@ -163,11 +135,11 @@ export default function BasesScreen() {
                 activeOpacity={0.7}
                 onPress={() => {
                     setSelectedLevel(level);
-                    setSelectedType('Todos'); // Reset filter when changing level
+                    setSelectedType('Todos');
                 }}
             >
                 <View style={styles.cardContent}>
-                    {/* Imagen del ayuntamiento */}
+
                     <View style={styles.imageContainer}>
                         <Image
                             source={townHallImages[level]}
@@ -176,7 +148,7 @@ export default function BasesScreen() {
                         />
                     </View>
 
-                    {/* Footer de la carta */}
+
                     <View style={styles.cardFooter}>
                         <Text style={styles.townHallText}>Nivel {level}</Text>
                     </View>
@@ -187,7 +159,7 @@ export default function BasesScreen() {
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            {/* Header */}
+
             {selectedLevel !== null ? (
                 <View>
                     <View style={styles.headerSelected}>
@@ -206,7 +178,7 @@ export default function BasesScreen() {
                             />
                         </TouchableOpacity>
                     </View>
-                    {/* Filtros */}
+
                     <View style={styles.filterContainer}>
                         <ScrollView
                             horizontal
@@ -241,7 +213,6 @@ export default function BasesScreen() {
                 </View>
             )}
 
-            {/* Content */}
             {selectedLevel === null ? (
                 <ScrollView
                     style={styles.scrollView}
@@ -285,7 +256,7 @@ export default function BasesScreen() {
                     )}
                 </View>
             )}
-            {/* Modal de Detalles de Base */}
+
             <Modal
                 transparent={true}
                 visible={modalVisible}
@@ -325,7 +296,7 @@ export default function BasesScreen() {
                 </View>
             </Modal>
 
-            {/* Modal de Información de Tipos de Bases */}
+
             <Modal
                 transparent={true}
                 visible={infoModalVisible}
@@ -355,58 +326,6 @@ export default function BasesScreen() {
                 </View>
             </Modal>
 
-            {/* Zoom de Imagen (Ahora como Overlay en lugar de Modal) */}
-            {imageModalVisible && selectedImageUrl && (
-                <View style={styles.zoomOverlay}>
-                    <ImageViewer
-                        imageUrls={[{ url: selectedImageUrl }]}
-                        onCancel={() => {
-                            setImageModalVisible(false);
-                            setZoomButtonsVisible(false);
-                        }}
-                        enableSwipeDown={false}
-                        renderIndicator={() => null}
-                        menus={() => null}
-                        onLongPress={() => setZoomButtonsVisible(!zoomButtonsVisible)}
-                        onClick={() => setZoomButtonsVisible(!zoomButtonsVisible)}
-                        renderHeader={() => (
-                            <View style={[styles.zoomHeader, { top: insets.top + 10 }]}>
-                                <TouchableOpacity
-                                    style={styles.backButtonZoom}
-                                    onPress={() => {
-                                        setImageModalVisible(false);
-                                        setZoomButtonsVisible(false);
-                                    }}
-                                >
-                                    <Ionicons name="close" size={24} color="#facc15" />
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        renderFooter={() => (
-                            zoomButtonsVisible && selectedBase && (
-                                <View style={[styles.zoomFooter, { paddingBottom: Math.max(insets.bottom, 15) }]}>
-                                    <View style={styles.baseButtons}>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}
-                                            onPress={() => Linking.openURL(selectedBase.link)}
-                                        >
-                                            <Text style={styles.copyButtonText}>Copiar Base</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.actionButton, styles.detailsButton]}
-                                            onPress={() => setModalVisible(true)}
-                                        >
-                                            <Text style={styles.detailsButtonText}>Detalles</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            )
-                        )}
-                        footerContainerStyle={{ bottom: 0, width: '100%' }}
-                        backgroundColor="black"
-                    />
-                </View>
-            )}
         </SafeAreaView >
     );
 }
@@ -464,11 +383,11 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         width: '100%',
-        height: 160, // Fixed height instead of aspect ratio
+        height: 160,
         backgroundColor: '#2a2a2a',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10, // Add padding to prevent edge touching
+        padding: 10,
         borderBottomWidth: 2,
         borderBottomColor: '#facc15',
     },
@@ -486,7 +405,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'LilitaOne',
     },
-    // Nuevo estilo para header cuando hay selección
     headerSelected: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -501,7 +419,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'LilitaOne',
     },
-    // Estilos para los filtros
     filterContainer: {
         backgroundColor: '#0a0a0a',
         paddingBottom: 15,
@@ -530,7 +447,6 @@ const styles = StyleSheet.create({
     filterTextActive: {
         color: '#000',
     },
-    // Contenedor y estilo para la vista del nivel seleccionado
     selectedContainer: {
         flex: 1,
         backgroundColor: '#0a0a0a',
@@ -607,7 +523,6 @@ const styles = StyleSheet.create({
         fontFamily: 'LilitaOne',
         fontSize: 16,
     },
-    // Estilos del Modal
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -621,22 +536,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '80%',
     },
-    modalEmoji: {
-        fontSize: 50,
-        marginBottom: 15,
-    },
     modalTitle: {
         color: '#facc15',
         fontSize: 18,
         fontFamily: 'LilitaOne',
         marginBottom: 5,
-    },
-    modalMessage: {
-        color: '#ffffffff',
-        fontSize: 14,
-        textAlign: 'justify',
-        marginBottom: 15,
-        fontFamily: 'LilitaOne',
     },
     modalButton: {
         backgroundColor: '#facc15',
@@ -672,7 +576,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'LilitaOne',
     },
-    // Estilos del Modal de Información
     infoScroll: {
         paddingTop: 5,
         width: '100%',
@@ -695,7 +598,6 @@ const styles = StyleSheet.create({
         fontFamily: 'LilitaOne',
         lineHeight: 18,
     },
-    // Estilos para modo sin conexión
     offlineContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -723,37 +625,5 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 14,
         fontFamily: 'LilitaOne',
-    },
-    // Estilos para Zoom de Imagen
-    zoomModalContainer: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    zoomHeader: {
-        position: 'absolute',
-        top: 15,
-        left: 15,
-        zIndex: 10,
-    },
-    backButtonZoom: {
-        borderRadius: 25,
-    },
-    zoomIconContainer: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 15,
-        padding: 5,
-    },
-    zoomOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'black',
-        zIndex: 1000,
-    },
-    zoomFooter: {
-        paddingHorizontal: 15,
-        paddingBottom: 15,
-        width: '100%',
     },
 });

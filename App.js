@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
@@ -11,17 +11,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import BasesScreen from './src/screens/BasesScreen';
 import ColaborarScreen from './src/screens/ColaborarScreen';
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 const Tab = createBottomTabNavigator();
 
 function MainTabs() {
   const insets = useSafeAreaInsets();
-
   const TAB_BAR_HEIGHT = 60;
   const DEFAULT_PADDING_BOTTOM = 10;
-
   const paddingBottom = insets.bottom > 0 ? insets.bottom + 10 : DEFAULT_PADDING_BOTTOM;
   const height = TAB_BAR_HEIGHT + paddingBottom;
 
@@ -30,13 +27,11 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           if (route.name === 'Bases') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Colaborar') {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#facc15',
@@ -67,10 +62,6 @@ export default function App() {
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide it immediately after the fonts are loaded and the UI is ready.
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
