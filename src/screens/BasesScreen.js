@@ -40,6 +40,7 @@ export default function BasesScreen() {
     const [imageModalVisible, setImageModalVisible] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedBase, setSelectedBase] = useState(null);
+    const [zoomButtonsVisible, setZoomButtonsVisible] = useState(false);
     const [isOffline, setIsOffline] = useState(false);
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
@@ -60,6 +61,14 @@ export default function BasesScreen() {
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
+                if (zoomButtonsVisible) {
+                    setZoomButtonsVisible(false);
+                    return true;
+                }
+                if (imageModalVisible) {
+                    setImageModalVisible(false);
+                    return true;
+                }
                 if (selectedLevel !== null) {
                     setSelectedLevel(null);
                     return true;
@@ -70,7 +79,7 @@ export default function BasesScreen() {
             const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
             return () => subscription.remove();
-        }, [selectedLevel])
+        }, [selectedLevel, imageModalVisible])
     );
 
     const fetchBases = async () => {
@@ -104,8 +113,10 @@ export default function BasesScreen() {
             <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => {
+                    setSelectedBase(item);
                     setSelectedImageUrl(item.url_foto);
                     setImageModalVisible(true);
+                    setZoomButtonsVisible(false); // Reset buttons state
                 }}
             >
                 <Image
@@ -343,35 +354,57 @@ export default function BasesScreen() {
                 </View>
             </Modal>
 
-            {/* Modal de Zoom de Imagen */}
-            <Modal
-                visible={imageModalVisible}
-                transparent={false}
-                animationType="fade"
-                onRequestClose={() => setImageModalVisible(false)}
-            >
-                <SafeAreaView style={styles.zoomModalContainer} edges={['top', 'left', 'right']}>
-                    {selectedImageUrl && (
-                        <ImageViewer
-                            imageUrls={[{ url: selectedImageUrl }]}
-                            onCancel={() => setImageModalVisible(false)}
-                            enableSwipeDown={false}
-                            renderIndicator={() => null}
-                            renderHeader={() => (
-                                <View style={styles.zoomHeader}>
-                                    <TouchableOpacity
-                                        style={styles.backButtonZoom}
-                                        onPress={() => setImageModalVisible(false)}
-                                    >
-                                        <Ionicons name="arrow-back" size={24} color="#facc15" />
-                                    </TouchableOpacity>
+            {/* Zoom de Imagen (Ahora como Overlay en lugar de Modal) */}
+            {imageModalVisible && selectedImageUrl && (
+                <View style={styles.zoomOverlay}>
+                    <ImageViewer
+                        imageUrls={[{ url: selectedImageUrl }]}
+                        onCancel={() => {
+                            setImageModalVisible(false);
+                            setZoomButtonsVisible(false);
+                        }}
+                        enableSwipeDown={false}
+                        renderIndicator={() => null}
+                        onLongPress={() => setZoomButtonsVisible(!zoomButtonsVisible)}
+                        onClick={() => setZoomButtonsVisible(!zoomButtonsVisible)}
+                        renderHeader={() => (
+                            <View style={styles.zoomHeader}>
+                                <TouchableOpacity
+                                    style={styles.backButtonZoom}
+                                    onPress={() => {
+                                        setImageModalVisible(false);
+                                        setZoomButtonsVisible(false);
+                                    }}
+                                >
+                                    <Ionicons name="close" size={24} color="#facc15" />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        renderFooter={() => (
+                            zoomButtonsVisible && selectedBase && (
+                                <View style={styles.zoomFooter}>
+                                    <View style={styles.baseButtons}>
+                                        <TouchableOpacity
+                                            style={styles.actionButton}
+                                            onPress={() => Linking.openURL(selectedBase.link)}
+                                        >
+                                            <Text style={styles.copyButtonText}>Copiar Base</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.actionButton, styles.detailsButton]}
+                                            onPress={() => setModalVisible(true)}
+                                        >
+                                            <Text style={styles.detailsButtonText}>Detalles</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            )}
-                            backgroundColor="black"
-                        />
-                    )}
-                </SafeAreaView>
-            </Modal>
+                            )
+                        )}
+                        footerContainerStyle={{ bottom: 10, width: '100%' }}
+                        backgroundColor="black"
+                    />
+                </View>
+            )}
         </SafeAreaView >
     );
 }
@@ -710,5 +743,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 15,
         padding: 5,
+    },
+    zoomOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'black',
+        zIndex: 1000,
+    },
+    zoomFooter: {
+        paddingHorizontal: 15,
+        paddingBottom: 15,
+        width: '100%',
     },
 });
