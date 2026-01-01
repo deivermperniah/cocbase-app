@@ -355,16 +355,15 @@ export default function BasesScreen() {
                         <ImageViewer
                             imageUrls={[{ url: selectedImageUrl }]}
                             onCancel={() => setImageModalVisible(false)}
-                            enableSwipeDown={true}
-                            onSwipeDown={() => setImageModalVisible(false)}
+                            enableSwipeDown={false}
                             renderIndicator={() => null}
-                            renderFooter={() => (
-                                <View style={styles.zoomFooter}>
+                            renderHeader={() => (
+                                <View style={styles.zoomHeader}>
                                     <TouchableOpacity
-                                        style={styles.modalButton}
+                                        style={styles.backButtonZoom}
                                         onPress={() => setImageModalVisible(false)}
                                     >
-                                        <Text style={styles.modalButtonText}>Cerrar</Text>
+                                        <Ionicons name="arrow-back" size={24} color="#facc15" />
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -695,11 +694,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000',
     },
-    zoomFooter: {
-        width: Dimensions.get('window').width,
-        paddingBottom: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
+    zoomHeader: {
+        position: 'absolute',
+        top: 15,
+        left: 15,
+        zIndex: 10,
+    },
+    backButtonZoom: {
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 25,
     },
     zoomIconContainer: {
         position: 'absolute',
