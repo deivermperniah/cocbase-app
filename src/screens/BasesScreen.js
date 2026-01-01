@@ -350,7 +350,7 @@ export default function BasesScreen() {
                 animationType="fade"
                 onRequestClose={() => setImageModalVisible(false)}
             >
-                <SafeAreaView style={styles.zoomModalContainer}>
+                <SafeAreaView style={styles.zoomModalContainer} edges={['top', 'left', 'right']}>
                     {selectedImageUrl && (
                         <ImageViewer
                             imageUrls={[{ url: selectedImageUrl }]}
