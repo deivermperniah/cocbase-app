@@ -701,7 +701,6 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     backButtonZoom: {
-        backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 25,
     },
     zoomIconContainer: {
@@ -710,6 +709,6 @@ const styles = StyleSheet.create({
         right: 10,
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 15,
-        padding: 6,
+        padding: 5,
     },
 });

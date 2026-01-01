@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         fontFamily: 'LilitaOne',
         lineHeight: 24,
-        paddingHorizontal: 20,
     },
     button: {
         flexDirection: 'row',
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         borderRadius: 12,
         marginBottom: 15,
-        width: '90%',
+        width: '100%',
         elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
