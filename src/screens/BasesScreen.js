@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderLeftWidth: 3,
         borderLeftColor: '#facc15',
-        paddingLeft: 12,
+        paddingLeft: 10,
     },
     infoTypeTitle: {
         color: '#facc15',
