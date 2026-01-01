@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler } from 'react-native';
 import { supabase } from '../../src/lib/supabase';
@@ -49,6 +49,10 @@ export default function BasesScreen() {
             fetchBases();
         }
     }, [selectedLevel]);
+
+    const filteredBases = useMemo(() => {
+        return bases.filter(base => selectedType === 'Todos' || base.type === selectedType);
+    }, [bases, selectedType]);
 
     useFocusEffect(
         useCallback(() => {
@@ -164,7 +168,7 @@ export default function BasesScreen() {
                 <View>
                     <View style={styles.headerSelected}>
                         <TouchableOpacity onPress={() => setSelectedLevel(null)} style={styles.backButton}>
-                            <Ionicons name="arrow-back" size={24} color="#facc15" />
+                            <Ionicons name="arrow-back" size={25} color="#facc15" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
                         <TouchableOpacity
@@ -173,7 +177,7 @@ export default function BasesScreen() {
                         >
                             <Ionicons
                                 name="information-circle-outline"
-                                size={24}
+                                size={25}
                                 color="#facc15"
                             />
                         </TouchableOpacity>
@@ -240,11 +244,15 @@ export default function BasesScreen() {
                         </View>
                     ) : (
                         <FlatList
-                            data={bases.filter(base => selectedType === 'Todos' || base.type === selectedType)}
+                            data={filteredBases}
                             renderItem={renderBaseItem}
                             keyExtractor={item => item.id.toString()}
                             contentContainerStyle={styles.basesList}
                             showsVerticalScrollIndicator={false}
+                            initialNumToRender={10}
+                            maxToRenderPerBatch={10}
+                            windowSize={5}
+                            removeClippedSubviews={true}
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>
                                     {selectedType === 'Todos'
@@ -418,6 +426,12 @@ const styles = StyleSheet.create({
         color: '#facc15',
         fontSize: 18,
         fontFamily: 'LilitaOne',
+    },
+    backButton: {
+        padding: 5,
+    },
+    infoButton: {
+        padding: 5,
     },
     filterContainer: {
         backgroundColor: '#0a0a0a',
