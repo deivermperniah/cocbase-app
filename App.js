@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -24,7 +24,9 @@ function MainTabs() {
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+        detachInactiveScreens={false}
+        sceneContainerStyle={{ backgroundColor: '#0a0a0a' }}
+        screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Bases') {
@@ -48,6 +50,7 @@ function MainTabs() {
         },
         headerShown: false,
         unmountOnBlur: false, // Ensure screens stay in memory
+        lazy: false, // Render all screens immediately
       })}
     >
       <Tab.Screen name="Bases" component={BasesScreen} />
@@ -59,6 +62,8 @@ function MainTabs() {
 export default function App() {
   const [fontsLoaded] = useFonts({
     LilitaOne: require('./assets/fonts/LilitaOne-Regular.ttf'),
+    ...Ionicons.font,
+    ...FontAwesome.font,
   });
 
   const onLayoutRootView = useCallback(async () => {
