@@ -47,6 +47,7 @@ function MainTabs() {
           fontFamily: 'LilitaOne',
         },
         headerShown: false,
+        unmountOnBlur: false, // Ensure screens stay in memory
       })}
     >
       <Tab.Screen name="Bases" component={BasesScreen} />

@@ -59,6 +59,7 @@ export default function BasesScreen() {
             const onBackPress = () => {
                 if (selectedLevel !== null) {
                     setSelectedLevel(null);
+                    setBases([]);
                     return true;
                 }
                 return false;
@@ -138,6 +139,8 @@ export default function BasesScreen() {
                 style={styles.card}
                 activeOpacity={0.7}
                 onPress={() => {
+                    setBases([]);
+                    setLoading(true);
                     setSelectedLevel(level);
                     setSelectedType('Todos');
                 }}
@@ -167,7 +170,13 @@ export default function BasesScreen() {
             {selectedLevel !== null ? (
                 <View>
                     <View style={styles.headerSelected}>
-                        <TouchableOpacity onPress={() => setSelectedLevel(null)} style={styles.backButton}>
+                        <TouchableOpacity 
+                            onPress={() => {
+                                setSelectedLevel(null);
+                                setBases([]);
+                            }} 
+                            style={styles.backButton}
+                        >
                             <Ionicons name="arrow-back" size={25} color="#facc15" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
