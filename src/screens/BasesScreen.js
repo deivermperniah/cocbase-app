@@ -71,52 +71,75 @@ export default function BasesScreen() {
         }, [selectedLevel])
     );
 
-    const fetchBases = async () => {
+    const fetchBases = async (isRetry = false) => {
         setLoading(true);
         setIsOffline(false);
+        const startTime = Date.now();
+
         try {
             let query = supabase
                 .from('bases')
                 .select('*')
-                .eq('level_th', selectedLevel);
+                .eq('level_th', selectedLevel)
+                .order('created_at', { ascending: false });
 
             const { data, error } = await query;
 
             if (error) {
                 setIsOffline(true);
-                return;
+            } else {
+                setBases(data || []);
+                setIsOffline(false);
             }
-
-            setBases(data || []);
-            setIsOffline(false);
         } catch (error) {
             console.error('Error fetching bases:', error);
             setIsOffline(true);
         } finally {
+            if (isRetry) {
+                const duration = Date.now() - startTime;
+                if (duration < 600) {
+                    await new Promise(resolve => setTimeout(resolve, 600 - duration));
+                }
+            }
             setLoading(false);
         }
     };
 
-    const renderBaseItem = ({ item }) => (
-        <View style={styles.baseCard}>
-            <View>
-                <Image
-                    source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
-                    style={styles.baseImage}
-                    resizeMode="cover"
-                />
-            </View>
-            <View style={styles.baseInfo}>
+    const renderBaseItem = ({ item }) => {
+        const isNew = () => {
+            if (!item.created_at) return false;
+            const createdDate = new Date(item.created_at);
+            const now = new Date();
+            const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
+            return diffInDays <= 7;
+        };
+
+        return (
+            <View style={styles.baseCard}>
+                <View style={styles.imageContainerList}>
+                    <Image
+                        source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
+                        style={styles.baseImage}
+                        resizeMode="cover"
+                    />
+                    {isNew() && (
+                        <View style={styles.newBadge}>
+                            <Text style={styles.newBadgeText}>Nuevo</Text>
+                        </View>
+                    )}
+                </View>
+                <View style={styles.baseInfo}>
                 <View style={styles.typeContainer}>
                     <Ionicons name="pricetag" size={20} color="#facc15" />
                     <Text style={styles.baseType}>{item.type}</Text>
                 </View>
                 <View style={styles.baseButtons}>
                     <TouchableOpacity
-                        style={styles.actionButton}
+                        style={[styles.actionButton, selectedLevel === 3 && styles.disabledButton]}
                         onPress={() => Linking.openURL(item.link)}
+                        disabled={selectedLevel === 3}
                     >
-                        <Text style={styles.copyButtonText}>Copiar Base</Text>
+                        <Text style={[styles.copyButtonText, selectedLevel === 3 && styles.disabledButtonText]}>Copiar Base</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.actionButton, styles.detailsButton]}
@@ -128,9 +151,10 @@ export default function BasesScreen() {
                         <Text style={styles.detailsButtonText}>Detalles</Text>
                     </TouchableOpacity>
                 </View>
+                </View>
             </View>
-        </View>
-    );
+        );
+    };
 
     const renderTownHallCard = (level) => {
         return (
@@ -247,7 +271,7 @@ export default function BasesScreen() {
                         <View style={styles.offlineContainer}>
                             <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
                             <Text style={styles.offlineText}>Sin conexión</Text>
-                            <TouchableOpacity style={styles.retryButton} onPress={fetchBases}>
+                            <TouchableOpacity style={styles.retryButton} onPress={() => fetchBases(true)}>
                                 <Text style={styles.retryButtonText}>Reintentar</Text>
                             </TouchableOpacity>
                         </View>
@@ -501,6 +525,28 @@ const styles = StyleSheet.create({
         height: 200,
         backgroundColor: '#2a2a2a',
     },
+    imageContainerList: {
+        position: 'relative',
+    },
+    newBadge: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        backgroundColor: '#facc15',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 5,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 2,
+    },
+    newBadgeText: {
+        color: '#000',
+        fontFamily: 'LilitaOne',
+        fontSize: 12,
+    },
     baseInfo: {
         padding: 15,
     },
@@ -530,6 +576,10 @@ const styles = StyleSheet.create({
     detailsButton: {
         backgroundColor: '#333',
     },
+    disabledButton: {
+        backgroundColor: '#333',
+        opacity: 0.6,
+    },
     copyButtonText: {
         color: '#000',
         fontFamily: 'LilitaOne',
@@ -539,6 +589,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontFamily: 'LilitaOne',
         fontSize: 14,
+    },
+    disabledButtonText: {
+        color: '#888',
     },
     emptyText: {
         color: '#999',
