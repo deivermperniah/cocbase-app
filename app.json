@@ -31,8 +31,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "e1392a9c-3997-4751-9a4b-398158fad74e"
+        "projectId": "a531ace0-182e-4b48-99ed-473e94bbfee7"
       }
-    }
+    },
+    "owner": "deivermperniah"
   }
 }
