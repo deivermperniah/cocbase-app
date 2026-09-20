@@ -30,6 +30,11 @@
     "plugins": [
       "expo-font"
     ],
-    "owner": "deivermperniah"
+    "owner": "deivermperniah",
+    "extra": {
+      "eas": {
+        "projectId": "3d21cd56-ee24-49c1-89e8-c55f5998b251"
+      }
+    }
   }
 }
