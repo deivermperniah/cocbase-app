@@ -9,7 +9,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 import BasesScreen from './src/screens/BasesScreen';
-import ColaborarScreen from './src/screens/ColaborarScreen';
+import CollaborateScreen from './src/screens/CollaborateScreen';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,7 +54,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Bases" component={BasesScreen} />
-      <Tab.Screen name="Colaborar" component={ColaborarScreen} />
+      <Tab.Screen name="Colaborar" component={CollaborateScreen} />
     </Tab.Navigator>
   );
 }

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 
-export default function ColaborarScreen() {
+export default function CollaborateScreen() {
     const openWhatsApp = () => {
         Linking.openURL('https://wa.me/51943458410');
     };

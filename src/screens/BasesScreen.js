@@ -6,22 +6,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 const townHallImages = {
-    3: require('../../assets/townhalls/th3.webp'),
-    4: require('../../assets/townhalls/th4.webp'),
-    5: require('../../assets/townhalls/th5.webp'),
-    6: require('../../assets/townhalls/th6.webp'),
-    7: require('../../assets/townhalls/th7.webp'),
-    8: require('../../assets/townhalls/th8.webp'),
-    9: require('../../assets/townhalls/th9.webp'),
-    10: require('../../assets/townhalls/th10.webp'),
-    11: require('../../assets/townhalls/th11.webp'),
-    12: require('../../assets/townhalls/th12.webp'),
-    13: require('../../assets/townhalls/th13.webp'),
-    14: require('../../assets/townhalls/th14.webp'),
-    15: require('../../assets/townhalls/th15.webp'),
-    16: require('../../assets/townhalls/th16.webp'),
-    17: require('../../assets/townhalls/th17.webp'),
-    18: require('../../assets/townhalls/th18.webp'),
+    3: require('../../assets/images/townhalls/th3.webp'),
+    4: require('../../assets/images/townhalls/th4.webp'),
+    5: require('../../assets/images/townhalls/th5.webp'),
+    6: require('../../assets/images/townhalls/th6.webp'),
+    7: require('../../assets/images/townhalls/th7.webp'),
+    8: require('../../assets/images/townhalls/th8.webp'),
+    9: require('../../assets/images/townhalls/th9.webp'),
+    10: require('../../assets/images/townhalls/th10.webp'),
+    11: require('../../assets/images/townhalls/th11.webp'),
+    12: require('../../assets/images/townhalls/th12.webp'),
+    13: require('../../assets/images/townhalls/th13.webp'),
+    14: require('../../assets/images/townhalls/th14.webp'),
+    15: require('../../assets/images/townhalls/th15.webp'),
+    16: require('../../assets/images/townhalls/th16.webp'),
+    17: require('../../assets/images/townhalls/th17.webp'),
+    18: require('../../assets/images/townhalls/th18.webp'),
 };
 
 export default function BasesScreen() {
