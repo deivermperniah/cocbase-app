@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Linking, ActivityIndicator, Modal, BackHandler, RefreshControl } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Modal, BackHandler, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Zoomable } from '@likashefqet/react-native-image-zoom';
-import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { BASE_COLUMNS, supabase } from '../lib/supabase';
+import { BASE_TYPES, TOWN_HALL_LEVELS, getBaseTypeIcon } from '../lib/constants';
+import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../context/FavoritesContext';
+import { confirmAndDeleteBase } from '../lib/admin';
+import ScreenHeader from '../components/ScreenHeader';
+import DetailHeader, { DetailHeaderButton } from '../components/DetailHeader';
+import BaseCard from '../components/BaseCard';
+import BaseActionsSheet from '../components/BaseActionsSheet';
+import ImageZoomModal from '../components/ImageZoomModal';
 
 const townHallImages = {
     3: require('../../assets/images/townhalls/th3.webp'),
@@ -28,21 +35,22 @@ const townHallImages = {
 };
 
 export default function BasesScreen() {
-    const townHalls = Array.from({ length: 16 }, (_, i) => i + 3);
+    const navigation = useNavigation();
+    const { user, isAdmin } = useAuth();
+    const { favoriteIds, toggleFavorite, refresh: refreshFavorites } = useFavorites();
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedType, setSelectedType] = useState('Todos');
     const [bases, setBases] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
     const [infoModalVisible, setInfoModalVisible] = useState(false);
-    const [selectedBase, setSelectedBase] = useState(null);
+    const [actionsBase, setActionsBase] = useState(null);
     const [errorText, setErrorText] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [zoomImage, setZoomImage] = useState(null);
     const levelRef = useRef(selectedLevel);
     levelRef.current = selectedLevel;
 
-    const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
+    const filterOptions = ['Todos', ...BASE_TYPES];
 
     const filterDescriptions = {
         'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
@@ -92,8 +100,9 @@ export default function BasesScreen() {
         try {
             let query = supabase
                 .from('bases')
-                .select('id, url_foto, type, link, created_at')
+                .select(BASE_COLUMNS)
                 .eq('level_th', level)
+                .eq('status', 'approved')
                 .order('created_at', { ascending: false });
 
             const { data, error } = await query;
@@ -123,63 +132,31 @@ export default function BasesScreen() {
         setRefreshing(false);
     };
 
-    const renderBaseItem = ({ item }) => {
-        const isNew = () => {
-            if (!item.created_at) return false;
-            const createdDate = new Date(item.created_at);
-            const now = new Date();
-            const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
-            return diffInDays <= 7;
-        };
+    const handleToggleFavorite = useCallback((base) => {
+        if (user) {
+            toggleFavorite(base);
+        } else {
+            navigation.navigate('Auth');
+        }
+    }, [user, toggleFavorite, navigation]);
 
-        return (
-            <View style={styles.baseCard}>
-                <View style={styles.imageContainerList}>
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        disabled={!item.url_foto}
-                        onPress={() => setZoomImage(item.url_foto)}
-                    >
-                        <Image
-                            source={item.url_foto ? { uri: item.url_foto } : null}
-                            style={styles.baseImage}
-                            contentFit="cover"
-                            cachePolicy="memory-disk"
-                        />
-                    </TouchableOpacity>
-                    {isNew() && (
-                        <View style={styles.newBadge}>
-                            <Text style={styles.newBadgeText}>Nuevo</Text>
-                        </View>
-                    )}
-                </View>
-                <View style={styles.baseInfo}>
-                <View style={styles.typeContainer}>
-                    <Ionicons name="pricetag" size={20} color="#facc15" />
-                    <Text style={styles.baseType}>{item.type}</Text>
-                </View>
-                <View style={styles.baseButtons}>
-                    <TouchableOpacity
-                        style={[styles.actionButton, (selectedLevel === 3 || !item.link) && styles.disabledButton]}
-                        onPress={() => Linking.openURL(item.link).catch(() => {})}
-                        disabled={selectedLevel === 3 || !item.link}
-                    >
-                        <Text style={[styles.copyButtonText, (selectedLevel === 3 || !item.link) && styles.disabledButtonText]}>Copiar Base</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.detailsButton]}
-                        onPress={() => {
-                            setSelectedBase(item);
-                            setModalVisible(true);
-                        }}
-                    >
-                        <Text style={styles.detailsButtonText}>Detalles</Text>
-                    </TouchableOpacity>
-                </View>
-                </View>
-            </View>
-        );
-    };
+    const handleDelete = useCallback(async (base) => {
+        if (await confirmAndDeleteBase(base)) {
+            setBases(previous => previous.filter(item => item.id !== base.id));
+            if (favoriteIds.has(base.id)) refreshFavorites();
+        }
+    }, [favoriteIds, refreshFavorites]);
+
+    const renderBaseItem = useCallback(({ item }) => (
+        <BaseCard
+            base={item}
+            isFavorite={favoriteIds.has(item.id)}
+            showType={false}
+            onToggleFavorite={handleToggleFavorite}
+            onPressImage={setZoomImage}
+            onOpenActions={setActionsBase}
+        />
+    ), [favoriteIds, handleToggleFavorite]);
 
     const renderTownHallCard = (level) => {
         return (
@@ -218,28 +195,21 @@ export default function BasesScreen() {
 
             {selectedLevel !== null ? (
                 <View>
-                    <View style={styles.headerSelected}>
-                        <TouchableOpacity 
-                            onPress={() => {
-                                setSelectedLevel(null);
-                                setBases([]);
-                            }} 
-                            style={styles.backButton}
-                        >
-                            <Ionicons name="arrow-back" size={25} color="#facc15" />
-                        </TouchableOpacity>
-                        <Text style={styles.headerTitleSelected}>Nivel {selectedLevel}</Text>
-                        <TouchableOpacity
-                            onPress={() => setInfoModalVisible(true)}
-                            style={styles.infoButton}
-                        >
-                            <Ionicons
-                                name="information-circle-outline"
-                                size={25}
-                                color="#facc15"
+                    <DetailHeader
+                        title={`Nivel ${selectedLevel}`}
+                        onBack={() => {
+                            setSelectedLevel(null);
+                            setBases([]);
+                        }}
+                        right={
+                            <DetailHeaderButton
+                                icon="information-circle-outline"
+                                label="Tipos de bases"
+                                onPress={() => setInfoModalVisible(true)}
                             />
-                        </TouchableOpacity>
-                    </View>
+                        }
+                        bordered={false}
+                    />
 
                     <View style={styles.filterContainer}>
                         <ScrollView
@@ -247,32 +217,39 @@ export default function BasesScreen() {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.filterContent}
                         >
-                            {filterOptions.map((type) => (
-                                <TouchableOpacity
-                                    key={type}
-                                    style={[
-                                        styles.filterButton,
-                                        selectedType === type && styles.filterButtonActive
-                                    ]}
-                                    onPress={() => setSelectedType(type)}
-                                >
-                                    <Text style={[
-                                        styles.filterText,
-                                        selectedType === type && styles.filterTextActive
-                                    ]}>
-                                        {type}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
+                            {filterOptions.map((type) => {
+                                const isActive = selectedType === type;
+                                return (
+                                    <TouchableOpacity
+                                        key={type}
+                                        style={[
+                                            styles.filterButton,
+                                            isActive && styles.filterButtonActive
+                                        ]}
+                                        onPress={() => setSelectedType(type)}
+                                    >
+                                        {type !== 'Todos' && (
+                                            <MaterialCommunityIcons
+                                                name={getBaseTypeIcon(type)}
+                                                size={16}
+                                                color={isActive ? '#000' : '#999'}
+                                            />
+                                        )}
+                                        <Text style={[
+                                            styles.filterText,
+                                            isActive && styles.filterTextActive
+                                        ]}>
+                                            {type}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </ScrollView>
                     </View>
 
                 </View>
             ) : (
-                <View style={styles.header}>
-                    <Text style={styles.headerTitle}>Bases</Text>
-                    <Text style={styles.headerSubtitle}>Selecciona tu nivel de ayuntamiento</Text>
-                </View>
+                <ScreenHeader title="Bases" subtitle="Selecciona tu nivel de ayuntamiento" />
             )}
 
             {selectedLevel === null ? (
@@ -282,7 +259,7 @@ export default function BasesScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.grid}>
-                        {townHalls.map(level => renderTownHallCard(level))}
+                        {TOWN_HALL_LEVELS.map(level => renderTownHallCard(level))}
                     </View>
                 </ScrollView>
             ) : (
@@ -304,7 +281,7 @@ export default function BasesScreen() {
                         <FlatList
                             data={filteredBases}
                             renderItem={renderBaseItem}
-                            keyExtractor={item => item.id.toString()}
+                            keyExtractor={item => item.id}
                             contentContainerStyle={styles.basesList}
                             showsVerticalScrollIndicator={false}
                             initialNumToRender={10}
@@ -332,47 +309,11 @@ export default function BasesScreen() {
                 </View>
             )}
 
-            <Modal
-                transparent={true}
-                visible={modalVisible}
-                animationType="fade"
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Detalles</Text>
-
-                        {selectedBase && (
-                            <View style={styles.detailsContainer}>
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>Diseñador:</Text>
-                                    <Text style={styles.detailValue}>{selectedBase.designer || 'Deiver Pernia'}</Text>
-                                </View>
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>Publicado:</Text>
-                                    <Text style={styles.detailValue}>
-                                        {selectedBase.created_at
-                                            ? new Date(selectedBase.created_at).toLocaleDateString('es-ES', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric'
-                                            })
-                                            : '—'}
-                                    </Text>
-                                </View>
-                            </View>
-                        )}
-
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.modalButtonText}>Cerrar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
+            <BaseActionsSheet
+                base={actionsBase}
+                onClose={() => setActionsBase(null)}
+                onDelete={isAdmin ? handleDelete : undefined}
+            />
 
             <Modal
                 transparent={true}
@@ -403,31 +344,7 @@ export default function BasesScreen() {
                 </View>
             </Modal>
 
-            <Modal
-                visible={zoomImage !== null}
-                animationType="fade"
-                onRequestClose={() => setZoomImage(null)}
-            >
-                <GestureHandlerRootView style={styles.zoomContainer}>
-                    <Zoomable
-                        minScale={1}
-                        maxScale={5}
-                        doubleTapScale={3}
-                        isDoubleTapEnabled
-                        style={styles.zoomable}
-                    >
-                        <Image
-                            source={zoomImage ? { uri: zoomImage } : null}
-                            style={styles.zoomImage}
-                            contentFit="contain"
-                            cachePolicy="memory-disk"
-                        />
-                    </Zoomable>
-                    <TouchableOpacity style={styles.zoomCloseButton} onPress={() => setZoomImage(null)}>
-                        <Ionicons name="close" size={30} color="#facc15" />
-                    </TouchableOpacity>
-                </GestureHandlerRootView>
-            </Modal>
+            <ImageZoomModal uri={zoomImage} onClose={() => setZoomImage(null)} />
 
         </SafeAreaView >
     );
@@ -437,25 +354,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#0a0a0a',
-    },
-    header: {
-        paddingHorizontal: 15,
-        paddingTop: 15,
-        paddingBottom: 15,
-        backgroundColor: '#0a0a0a',
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
-    },
-    headerTitle: {
-        color: '#facc15',
-        fontSize: 28,
-        marginBottom: 5,
-        fontFamily: 'LilitaOne',
-    },
-    headerSubtitle: {
-        color: '#999',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
     },
     scrollView: {
         flex: 1,
@@ -503,26 +401,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'LilitaOne',
     },
-    headerSelected: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 15,
-        paddingTop: 15,
-        paddingBottom: 15,
-        backgroundColor: '#0a0a0a',
-    },
-    headerTitleSelected: {
-        color: '#facc15',
-        fontSize: 18,
-        fontFamily: 'LilitaOne',
-    },
-    backButton: {
-        padding: 5,
-    },
-    infoButton: {
-        padding: 5,
-    },
     filterContainer: {
         backgroundColor: '#0a0a0a',
         paddingBottom: 15,
@@ -534,6 +412,9 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     filterButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
@@ -571,81 +452,6 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
     },
-    baseCard: {
-        backgroundColor: '#1a1a1a',
-        borderRadius: 12,
-        marginBottom: 15,
-        overflow: 'hidden',
-    },
-    baseImage: {
-        width: '100%',
-        height: 200,
-        backgroundColor: '#2a2a2a',
-    },
-    imageContainerList: {
-        position: 'relative',
-    },
-    newBadge: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        backgroundColor: '#facc15',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 5,
-        boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
-    },
-    newBadgeText: {
-        color: '#000',
-        fontFamily: 'LilitaOne',
-        fontSize: 12,
-    },
-    baseInfo: {
-        padding: 15,
-    },
-    typeContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-        gap: 8,
-    },
-    baseType: {
-        color: '#fff',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-        textTransform: 'capitalize',
-    },
-    baseButtons: {
-        flexDirection: 'row',
-        gap: 10,
-    },
-    actionButton: {
-        flex: 1,
-        backgroundColor: '#facc15',
-        paddingVertical: 10,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    detailsButton: {
-        backgroundColor: '#333',
-    },
-    disabledButton: {
-        backgroundColor: '#333',
-        opacity: 0.6,
-    },
-    copyButtonText: {
-        color: '#000',
-        fontFamily: 'LilitaOne',
-        fontSize: 14,
-    },
-    detailsButtonText: {
-        color: '#fff',
-        fontFamily: 'LilitaOne',
-        fontSize: 14,
-    },
-    disabledButtonText: {
-        color: '#888',
-    },
     emptyText: {
         color: '#999',
         textAlign: 'center',
@@ -680,29 +486,6 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: '#000',
         fontSize: 14,
-        fontFamily: 'LilitaOne',
-    },
-    detailsContainer: {
-        width: '100%',
-        marginBottom: 15,
-        gap: 10,
-    },
-    detailRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 5,
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
-    },
-    detailLabel: {
-        color: '#999',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-    },
-    detailValue: {
-        color: '#fff',
-        fontSize: 16,
         fontFamily: 'LilitaOne',
     },
     infoScroll: {
@@ -750,22 +533,5 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 14,
         fontFamily: 'LilitaOne',
-    },
-    zoomContainer: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    zoomable: {
-        flex: 1,
-    },
-    zoomImage: {
-        width: '100%',
-        height: '100%',
-    },
-    zoomCloseButton: {
-        position: 'absolute',
-        top: 50,
-        right: 20,
-        padding: 5,
     },
 });
