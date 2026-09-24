@@ -8,16 +8,10 @@ import { supabase } from '../lib/supabase';
 import { REVIEW_COLUMNS, reviewBase } from '../lib/admin';
 import { showMessage } from '../lib/dialogs';
 import { getBaseTypeIcon } from '../lib/constants';
+import { formatRelativeDate } from '../lib/format';
 import DetailHeader from '../components/DetailHeader';
 import ImageZoomModal from '../components/ImageZoomModal';
 import InfoBadge from '../components/InfoBadge';
-
-function formatRelativeDate(value) {
-    const days = Math.floor((Date.now() - new Date(value).getTime()) / (1000 * 60 * 60 * 24));
-    if (days <= 0) return 'hoy';
-    if (days === 1) return 'ayer';
-    return `hace ${days} días`;
-}
 
 function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
     const authorName = base.profiles?.full_name || 'Sin nombre';
