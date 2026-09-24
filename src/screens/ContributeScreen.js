@@ -3,42 +3,70 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, KeyboardAvoidingView, RefreshControl, Platform, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
-import { STATUS_LABELS } from '../lib/constants';
+import { getBaseTypeIcon } from '../lib/constants';
+import { formatRelativeDate } from '../lib/format';
 import { confirmAction, showMessage } from '../lib/dialogs';
 import { SUBMISSION_COLUMNS, deleteRejectedSubmission } from '../lib/baseSubmission';
 import { useAuth } from '../context/AuthContext';
 import ScreenHeader from '../components/ScreenHeader';
 import SignInPrompt from '../components/SignInPrompt';
 import BaseForm from '../components/BaseForm';
+import InfoBadge from '../components/InfoBadge';
+
+const STATUS_GROUPS = [
+    { status: 'pending', title: 'En revisión', icon: 'time-outline', color: '#999' },
+    { status: 'approved', title: 'Aprobadas', icon: 'checkmark-circle-outline', color: '#facc15' },
+    { status: 'rejected', title: 'Rechazadas', icon: 'close-circle-outline', color: '#f87171' },
+];
 
 function SubmissionItem({ submission, onDelete }) {
+    const isRejected = submission.status === 'rejected';
+
     return (
-        <View style={styles.submission}>
-            <View style={styles.submissionInfo}>
-                <Text style={styles.submissionCode} numberOfLines={1}>{submission.code}</Text>
-                <Text style={styles.submissionMeta}>Nivel {submission.level_th} · {submission.type}</Text>
-                {submission.review_note ? (
-                    <Text style={styles.submissionNote} numberOfLines={2}>{submission.review_note}</Text>
-                ) : null}
+        <View style={[styles.submission, isRejected && styles.submissionRejected]}>
+            <View style={styles.submissionRow}>
+                <InfoBadge icon="castle" label={submission.level_th} />
+                <InfoBadge icon={getBaseTypeIcon(submission.type)} label={submission.type} />
+                <Text style={styles.dateText} numberOfLines={1}>{formatRelativeDate(submission.created_at)}</Text>
             </View>
-            <View style={[styles.statusBadge, styles[`status_${submission.status}`]]}>
-                <Text style={[styles.statusText, styles[`statusText_${submission.status}`]]}>
-                    {STATUS_LABELS[submission.status]}
-                </Text>
-            </View>
-            {submission.status === 'rejected' && (
-                <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => onDelete(submission)}
-                    hitSlop={4}
-                    accessibilityRole="button"
-                    accessibilityLabel="Eliminar base rechazada"
-                >
-                    <Ionicons name="trash-outline" size={20} color="#f87171" />
-                </TouchableOpacity>
+            {isRejected && (
+                <View style={styles.rejection}>
+                    <Text style={styles.noteText} numberOfLines={2}>
+                        <Text style={styles.noteLabel}>Motivo: </Text>
+                        {submission.review_note || 'sin especificar'}
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={() => onDelete(submission)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Eliminar base rechazada"
+                    >
+                        <Ionicons name="trash-outline" size={18} color="#f87171" />
+                        <Text style={styles.deleteText}>Eliminar</Text>
+                    </TouchableOpacity>
+                </View>
             )}
         </View>
     );
+}
+
+function SubmissionGroups({ submissions, onDelete }) {
+    return STATUS_GROUPS.map(({ status, title, icon, color }) => {
+        const items = submissions.filter(submission => submission.status === status);
+        if (items.length === 0) return null;
+
+        return (
+            <View key={status} style={styles.group}>
+                <View style={styles.groupHeader}>
+                    <Ionicons name={icon} size={16} color={color} />
+                    <Text style={[styles.groupTitle, { color }]}>{title}</Text>
+                </View>
+                {items.map(submission => (
+                    <SubmissionItem key={submission.id} submission={submission} onDelete={onDelete} />
+                ))}
+            </View>
+        );
+    });
 }
 
 export default function ContributeScreen() {
@@ -138,9 +166,7 @@ export default function ContributeScreen() {
                             <ActivityIndicator color="#facc15" style={styles.submissionsLoader} />
                         ) : submissions.length > 0 ? (
                             <View style={styles.submissions}>
-                                {submissions.map(submission => (
-                                    <SubmissionItem key={submission.id} submission={submission} onDelete={handleDelete} />
-                                ))}
+                                <SubmissionGroups submissions={submissions} onDelete={handleDelete} />
                             </View>
                         ) : (
                             <Text style={styles.emptyText}>Aún no has enviado bases.</Text>
@@ -195,71 +221,75 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
     submissions: {
-        gap: 10,
+        gap: 18,
         marginTop: 10,
     },
+    group: {
+        gap: 10,
+    },
+    groupHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    groupTitle: {
+        fontSize: 13,
+        fontFamily: 'LilitaOne',
+        textTransform: 'uppercase',
+    },
     submission: {
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#333',
+        backgroundColor: '#2a2a2a',
+        overflow: 'hidden',
+    },
+    submissionRejected: {
+        borderColor: 'rgba(239, 68, 68, 0.4)',
+    },
+    submissionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        padding: 12,
+    },
+    rejection: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        padding: 12,
-        borderRadius: 8,
-        backgroundColor: '#2a2a2a',
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        backgroundColor: 'rgba(239, 68, 68, 0.15)',
     },
-    submissionInfo: {
+    noteLabel: {
+        color: '#f87171',
+    },
+    noteText: {
         flex: 1,
-        gap: 2,
-    },
-    submissionCode: {
-        color: '#fff',
-        fontSize: 15,
-        fontFamily: 'LilitaOne',
-    },
-    submissionMeta: {
-        color: '#999',
+        color: '#fca5a5',
         fontSize: 13,
         fontFamily: 'LilitaOne',
     },
-    submissionNote: {
-        color: '#f87171',
-        fontSize: 12,
-        fontFamily: 'LilitaOne',
-        marginTop: 2,
-    },
-    statusBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 5,
-    },
-    statusText: {
-        fontSize: 12,
-        fontFamily: 'LilitaOne',
-    },
-    status_pending: {
-        backgroundColor: '#333',
-    },
-    status_approved: {
-        backgroundColor: '#facc15',
-    },
-    status_rejected: {
-        backgroundColor: 'rgba(248, 113, 113, 0.15)',
-    },
-    statusText_pending: {
-        color: '#ccc',
-    },
-    statusText_approved: {
-        color: '#000',
-    },
-    statusText_rejected: {
-        color: '#f87171',
-    },
     deleteButton: {
-        width: 44,
-        height: 36,
-        borderRadius: 8,
-        backgroundColor: '#333',
-        justifyContent: 'center',
+        flexDirection: 'row',
         alignItems: 'center',
+        gap: 6,
+        height: 36,
+        paddingHorizontal: 14,
+        borderRadius: 8,
+        backgroundColor: '#1a1a1a',
+    },
+    deleteText: {
+        color: '#f87171',
+        fontSize: 14,
+        fontFamily: 'LilitaOne',
+    },
+    dateText: {
+        flex: 1,
+        textAlign: 'right',
+        color: '#999',
+        fontSize: 13,
+        fontFamily: 'LilitaOne',
     },
     emptyText: {
         color: '#999',

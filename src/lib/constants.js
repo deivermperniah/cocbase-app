@@ -13,12 +13,6 @@ export function getBaseTypeIcon(type) {
 
 export const TOWN_HALL_LEVELS = Array.from({ length: 16 }, (_, i) => i + 3);
 
-export const STATUS_LABELS = {
-    pending: 'En revisión',
-    approved: 'Aprobada',
-    rejected: 'Rechazada',
-};
-
 export const WEB_URL = 'https://cocbase.vercel.app';
 
 export const ADMIN_ROLE = 'admin';
