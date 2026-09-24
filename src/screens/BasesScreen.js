@@ -92,7 +92,7 @@ export default function BasesScreen() {
         try {
             let query = supabase
                 .from('bases')
-                .select('id, url_foto, type, link, created_at, designer')
+                .select('id, url_foto, type, link, created_at')
                 .eq('level_th', level)
                 .order('created_at', { ascending: false });
 
@@ -475,11 +475,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         backgroundColor: '#1a1a1a',
         overflow: 'hidden',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)',
     },
     cardContent: {
         width: '100%',
@@ -597,11 +593,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 5,
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
+        boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
     },
     newBadgeText: {
         color: '#000',
@@ -752,11 +744,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         paddingVertical: 12,
         borderRadius: 25,
-        elevation: 3,
-        shadowColor: '#facc15',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
+        boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
     },
     retryButtonText: {
         color: '#000',

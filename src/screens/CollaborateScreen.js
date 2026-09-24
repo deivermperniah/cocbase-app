@@ -84,11 +84,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 15,
         width: '100%',
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.25)',
     },
     whatsappButton: {
         backgroundColor: '#25D366',
