@@ -7,6 +7,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BasesScreen from './src/screens/BasesScreen';
 import CollaborateScreen from './src/screens/CollaborateScreen';
@@ -25,8 +26,8 @@ function MainTabs() {
   return (
     <Tab.Navigator
         detachInactiveScreens={false}
-        sceneContainerStyle={{ backgroundColor: '#0a0a0a' }}
         screenOptions={({ route }) => ({
+        sceneStyle: { backgroundColor: '#0a0a0a' },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Bases') {
@@ -49,7 +50,6 @@ function MainTabs() {
           fontFamily: 'LilitaOne',
         },
         headerShown: false,
-        unmountOnBlur: false, // Ensure screens stay in memory
         lazy: false, // Render all screens immediately
       })}
     >
@@ -77,13 +77,15 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
-        <NavigationContainer>
-          <StatusBar style="light" />
-          <MainTabs />
-        </NavigationContainer>
-      </View>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
+          <NavigationContainer>
+            <StatusBar style="light" />
+            <MainTabs />
+          </NavigationContainer>
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

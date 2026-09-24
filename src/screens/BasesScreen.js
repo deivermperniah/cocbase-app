@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator, Modal, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Linking, ActivityIndicator, Modal, BackHandler, RefreshControl } from 'react-native';
+import { Image } from 'expo-image';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Zoomable } from '@likashefqet/react-native-image-zoom';
 import { supabase } from '../../src/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -33,7 +36,11 @@ export default function BasesScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [infoModalVisible, setInfoModalVisible] = useState(false);
     const [selectedBase, setSelectedBase] = useState(null);
-    const [isOffline, setIsOffline] = useState(false);
+    const [errorText, setErrorText] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
+    const [zoomImage, setZoomImage] = useState(null);
+    const levelRef = useRef(selectedLevel);
+    levelRef.current = selectedLevel;
 
     const filterOptions = ['Todos', 'Guerra', 'Liga', 'Mejora', 'Recursos'];
 
@@ -46,7 +53,7 @@ export default function BasesScreen() {
 
     useEffect(() => {
         if (selectedLevel) {
-            fetchBases();
+            fetchBases(selectedLevel);
         }
     }, [selectedLevel]);
 
@@ -71,38 +78,49 @@ export default function BasesScreen() {
         }, [selectedLevel])
     );
 
-    const fetchBases = async (isRetry = false) => {
-        setLoading(true);
-        setIsOffline(false);
+    const fetchBases = async (level, { isRetry = false, isRefresh = false } = {}) => {
+        if (isRefresh) {
+            setRefreshing(true);
+        } else {
+            setLoading(true);
+        }
+        setErrorText(null);
         const startTime = Date.now();
+        let nextBases = null;
+        let nextError = null;
 
         try {
             let query = supabase
                 .from('bases')
-                .select('*')
-                .eq('level_th', selectedLevel)
+                .select('id, url_foto, type, link, created_at, designer')
+                .eq('level_th', level)
                 .order('created_at', { ascending: false });
 
             const { data, error } = await query;
 
             if (error) {
-                setIsOffline(true);
+                nextError = /network|fetch/i.test(error.message) ? 'Sin conexión' : 'Error al cargar';
             } else {
-                setBases(data || []);
-                setIsOffline(false);
+                nextBases = data || [];
             }
         } catch (error) {
             console.error('Error fetching bases:', error);
-            setIsOffline(true);
-        } finally {
-            if (isRetry) {
-                const duration = Date.now() - startTime;
-                if (duration < 600) {
-                    await new Promise(resolve => setTimeout(resolve, 600 - duration));
-                }
-            }
-            setLoading(false);
+            nextError = 'Sin conexión';
         }
+
+        if (isRetry) {
+            const duration = Date.now() - startTime;
+            if (duration < 600) {
+                await new Promise(resolve => setTimeout(resolve, 600 - duration));
+            }
+        }
+
+        if (levelRef.current !== level) return;
+
+        if (nextBases) setBases(nextBases);
+        setErrorText(nextError);
+        setLoading(false);
+        setRefreshing(false);
     };
 
     const renderBaseItem = ({ item }) => {
@@ -117,11 +135,18 @@ export default function BasesScreen() {
         return (
             <View style={styles.baseCard}>
                 <View style={styles.imageContainerList}>
-                    <Image
-                        source={{ uri: item.url_foto || 'https://via.placeholder.com/300' }}
-                        style={styles.baseImage}
-                        resizeMode="cover"
-                    />
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        disabled={!item.url_foto}
+                        onPress={() => setZoomImage(item.url_foto)}
+                    >
+                        <Image
+                            source={item.url_foto ? { uri: item.url_foto } : null}
+                            style={styles.baseImage}
+                            contentFit="cover"
+                            cachePolicy="memory-disk"
+                        />
+                    </TouchableOpacity>
                     {isNew() && (
                         <View style={styles.newBadge}>
                             <Text style={styles.newBadgeText}>Nuevo</Text>
@@ -135,11 +160,11 @@ export default function BasesScreen() {
                 </View>
                 <View style={styles.baseButtons}>
                     <TouchableOpacity
-                        style={[styles.actionButton, selectedLevel === 3 && styles.disabledButton]}
-                        onPress={() => Linking.openURL(item.link)}
-                        disabled={selectedLevel === 3}
+                        style={[styles.actionButton, (selectedLevel === 3 || !item.link) && styles.disabledButton]}
+                        onPress={() => Linking.openURL(item.link).catch(() => {})}
+                        disabled={selectedLevel === 3 || !item.link}
                     >
-                        <Text style={[styles.copyButtonText, selectedLevel === 3 && styles.disabledButtonText]}>Copiar Base</Text>
+                        <Text style={[styles.copyButtonText, (selectedLevel === 3 || !item.link) && styles.disabledButtonText]}>Copiar Base</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.actionButton, styles.detailsButton]}
@@ -175,7 +200,7 @@ export default function BasesScreen() {
                         <Image
                             source={townHallImages[level]}
                             style={styles.townHallImage}
-                            resizeMode="cover"
+                            contentFit="cover"
                         />
                     </View>
 
@@ -267,11 +292,11 @@ export default function BasesScreen() {
                             <ActivityIndicator size="large" color="#facc15" />
                             <Text style={styles.loadingText}>Cargando...</Text>
                         </View>
-                    ) : isOffline ? (
+                    ) : errorText ? (
                         <View style={styles.offlineContainer}>
                             <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                            <Text style={styles.offlineText}>Sin conexión</Text>
-                            <TouchableOpacity style={styles.retryButton} onPress={() => fetchBases(true)}>
+                            <Text style={styles.offlineText}>{errorText}</Text>
+                            <TouchableOpacity style={styles.retryButton} onPress={() => fetchBases(selectedLevel, { isRetry: true })}>
                                 <Text style={styles.retryButtonText}>Reintentar</Text>
                             </TouchableOpacity>
                         </View>
@@ -286,6 +311,15 @@ export default function BasesScreen() {
                             maxToRenderPerBatch={10}
                             windowSize={5}
                             removeClippedSubviews={true}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={() => fetchBases(selectedLevel, { isRefresh: true })}
+                                    colors={['#facc15']}
+                                    tintColor="#facc15"
+                                    progressBackgroundColor="#1a1a1a"
+                                />
+                            }
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>
                                     {selectedType === 'Todos'
@@ -312,16 +346,18 @@ export default function BasesScreen() {
                             <View style={styles.detailsContainer}>
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>Diseñador:</Text>
-                                    <Text style={styles.detailValue}>Deiver Pernia</Text>
+                                    <Text style={styles.detailValue}>{selectedBase.designer || 'Deiver Pernia'}</Text>
                                 </View>
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>Publicado:</Text>
                                     <Text style={styles.detailValue}>
-                                        {new Date(selectedBase.created_at).toLocaleDateString('es-ES', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric'
-                                        })}
+                                        {selectedBase.created_at
+                                            ? new Date(selectedBase.created_at).toLocaleDateString('es-ES', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric'
+                                            })
+                                            : '—'}
                                     </Text>
                                 </View>
                             </View>
@@ -365,6 +401,32 @@ export default function BasesScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
+            </Modal>
+
+            <Modal
+                visible={zoomImage !== null}
+                animationType="fade"
+                onRequestClose={() => setZoomImage(null)}
+            >
+                <GestureHandlerRootView style={styles.zoomContainer}>
+                    <Zoomable
+                        minScale={1}
+                        maxScale={5}
+                        doubleTapScale={3}
+                        isDoubleTapEnabled
+                        style={styles.zoomable}
+                    >
+                        <Image
+                            source={zoomImage ? { uri: zoomImage } : null}
+                            style={styles.zoomImage}
+                            contentFit="contain"
+                            cachePolicy="memory-disk"
+                        />
+                    </Zoomable>
+                    <TouchableOpacity style={styles.zoomCloseButton} onPress={() => setZoomImage(null)}>
+                        <Ionicons name="close" size={30} color="#facc15" />
+                    </TouchableOpacity>
+                </GestureHandlerRootView>
             </Modal>
 
         </SafeAreaView >
@@ -700,5 +762,22 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 14,
         fontFamily: 'LilitaOne',
+    },
+    zoomContainer: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    zoomable: {
+        flex: 1,
+    },
+    zoomImage: {
+        width: '100%',
+        height: '100%',
+    },
+    zoomCloseButton: {
+        position: 'absolute',
+        top: 50,
+        right: 20,
+        padding: 5,
     },
 });
