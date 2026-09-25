@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { FavoritesProvider } from './src/context/FavoritesContext';
+import DialogProvider from './src/components/DialogProvider';
 import BasesScreen from './src/screens/BasesScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import ContributeScreen from './src/screens/ContributeScreen';
@@ -116,16 +117,18 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AuthProvider>
-          <FavoritesProvider>
-            <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
-              <NavigationContainer>
-                <StatusBar style="light" />
-                <RootNavigator />
-              </NavigationContainer>
-            </View>
-          </FavoritesProvider>
-        </AuthProvider>
+        <DialogProvider>
+          <AuthProvider>
+            <FavoritesProvider>
+              <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
+                <NavigationContainer>
+                  <StatusBar style="light" />
+                  <RootNavigator />
+                </NavigationContainer>
+              </View>
+            </FavoritesProvider>
+          </AuthProvider>
+        </DialogProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

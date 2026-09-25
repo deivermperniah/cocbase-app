@@ -35,7 +35,7 @@ export default function SettingsScreen() {
     const { user, profile, isAdmin, signOut } = useAuth();
 
     const confirmSignOut = async () => {
-        if (await confirmAction('Cerrar sesión', '¿Seguro que quieres cerrar sesión?', 'Cerrar sesión')) {
+        if (await confirmAction('Cerrar sesión', '¿Seguro que quieres cerrar sesión?', 'Cerrar sesión', { icon: 'log-out-outline' })) {
             signOut();
         }
     };
@@ -62,7 +62,7 @@ export default function SettingsScreen() {
                 </ListSection>
 
                 <Text style={styles.disclaimer}>
-                    Clash of Clans es una marca registrada de Supercell Oy. cocbase es un proyecto de la comunidad y no está afiliado, patrocinado ni respaldado por Supercell.
+                    Clash of Clans es una marca registrada de Supercell Oy. cocbase es un proyecto de la comunidad y no está afiliado, patrocinado ni respaldado por Supercell
                 </Text>
             </ScrollView>
         </SafeAreaView>

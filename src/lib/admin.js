@@ -68,8 +68,9 @@ async function deleteBase(base) {
 export async function confirmAndDeleteBase(base) {
     const confirmed = await confirmAction(
         'Eliminar base',
-        'Se eliminará la base y su imagen. Esta acción no se puede deshacer.',
+        'Esta acción no se puede deshacer',
         'Eliminar',
+        { icon: 'trash-outline' },
     );
     if (!confirmed) return false;
 
@@ -77,7 +78,7 @@ export async function confirmAndDeleteBase(base) {
         await deleteBase(base);
         return true;
     } catch {
-        showMessage('Eliminar base', 'No se pudo eliminar la base.');
+        showMessage('Eliminar base', 'No se pudo eliminar la base');
         return false;
     }
 }
@@ -115,23 +116,24 @@ export async function confirmAndDeleteImage(image, inUse) {
     const confirmed = await confirmAction(
         'Eliminar imagen',
         inUse
-            ? 'Esta imagen la usa una base, que se quedará sin foto. Esta acción no se puede deshacer.'
-            : 'Se eliminará la imagen. Esta acción no se puede deshacer.',
+            ? 'Esta imagen la usa una base, que se quedará sin foto. Esta acción no se puede deshacer'
+            : 'Se eliminará la imagen. Esta acción no se puede deshacer',
         'Eliminar',
+        { icon: 'trash-outline' },
     );
     if (!confirmed) return false;
 
     if (inUse) {
         const { error } = await supabase.from('bases').update({ url_foto: null }).eq('url_foto', image.url);
         if (error) {
-            showMessage('Eliminar imagen', 'No se pudo desvincular la imagen de su base.');
+            showMessage('Eliminar imagen', 'No se pudo desvincular la imagen de su base');
             return false;
         }
     }
 
     const { error } = await supabase.storage.from(BUCKET).remove([image.name]);
     if (error) {
-        showMessage('Eliminar imagen', 'No se pudo eliminar la imagen.');
+        showMessage('Eliminar imagen', 'No se pudo eliminar la imagen');
         return false;
     }
     return true;

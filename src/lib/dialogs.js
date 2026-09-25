@@ -1,21 +1,30 @@
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 
-export function showMessage(title, message) {
-    if (Platform.OS === 'web') {
-        window.alert(`${title}\n\n${message}`);
-        return;
-    }
-    Alert.alert(title, message);
+let presentDialog = null;
+
+export function registerDialogPresenter(presenter) {
+    presentDialog = presenter;
+    return () => {
+        if (presentDialog === presenter) presentDialog = null;
+    };
 }
 
-export function confirmAction(title, message, confirmText) {
-    if (Platform.OS === 'web') {
-        return Promise.resolve(window.confirm(`${title}\n\n${message}`));
+export function showMessage(title, message, { icon = 'information-circle-outline' } = {}) {
+    if (!presentDialog) {
+        Alert.alert(title, message);
+        return Promise.resolve();
     }
-    return new Promise((resolve) => {
-        Alert.alert(title, message, [
-            { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
-            { text: confirmText, style: 'destructive', onPress: () => resolve(true) },
-        ], { cancelable: true, onDismiss: () => resolve(false) });
-    });
+    return presentDialog({ title, message, icon });
+}
+
+export function confirmAction(title, message, confirmText, { icon = 'alert-circle-outline' } = {}) {
+    if (!presentDialog) {
+        return new Promise((resolve) => {
+            Alert.alert(title, message, [
+                { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+                { text: confirmText, style: 'destructive', onPress: () => resolve(true) },
+            ], { cancelable: true, onDismiss: () => resolve(false) });
+        });
+    }
+    return presentDialog({ title, message, icon, confirmText });
 }
