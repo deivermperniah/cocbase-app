@@ -34,7 +34,7 @@ async function isLinkTaken(link, linkId) {
         .eq('link', link)
         .limit(1);
 
-    if (exactError) throw new SubmissionError('Error al verificar el enlace.');
+    if (exactError) throw new SubmissionError('Error al verificar el enlace');
     if (exactMatches.length > 0) return true;
 
     const idToken = linkId.split(':').pop();
@@ -44,7 +44,7 @@ async function isLinkTaken(link, linkId) {
         .ilike('link', `%${escapeLike(idToken)}%`)
         .limit(50);
 
-    if (similarError) throw new SubmissionError('Error al verificar el enlace.');
+    if (similarError) throw new SubmissionError('Error al verificar el enlace');
     return similarMatches.some(base => base.link && getBaseLinkId(base.link) === linkId);
 }
 
@@ -79,8 +79,8 @@ async function uploadImage(bytes) {
     if (error) {
         const isDuplicate = error.statusCode === '409' || /exists|duplicate/i.test(error.message);
         throw new SubmissionError(isDuplicate
-            ? 'Esta imagen ya fue subida anteriormente.'
-            : 'Error al subir la imagen. Intenta con otra.');
+            ? 'Esta imagen ya fue subida anteriormente'
+            : 'Error al subir la imagen. Intenta con otra');
     }
 
     return {
@@ -94,9 +94,9 @@ export async function submitBase({ level, type, link, asset, userId, publish = f
 
     if (trimmedLink) {
         const linkId = getBaseLinkId(trimmedLink);
-        if (!linkId) throw new SubmissionError('El enlace no es válido.');
+        if (!linkId) throw new SubmissionError('El enlace no es válido');
         if (await isLinkTaken(trimmedLink, linkId)) {
-            throw new SubmissionError('Esta base ya fue guardada anteriormente.');
+            throw new SubmissionError('Esta base ya fue guardada anteriormente');
         }
     }
 
@@ -118,7 +118,7 @@ export async function submitBase({ level, type, link, asset, userId, publish = f
 
     if (error) {
         await supabase.storage.from(BUCKET).remove([fileName]);
-        throw new SubmissionError('Error al guardar la base. Intenta nuevamente.');
+        throw new SubmissionError('Error al guardar la base. Intenta nuevamente');
     }
 
     return data;
@@ -133,6 +133,6 @@ export async function deleteRejectedSubmission(submissionId) {
         .select('id');
 
     if (error || data.length === 0) {
-        throw new SubmissionError('No se pudo eliminar la base.');
+        throw new SubmissionError('No se pudo eliminar la base');
     }
 }

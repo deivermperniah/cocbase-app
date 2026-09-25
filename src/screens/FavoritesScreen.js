@@ -87,7 +87,7 @@ export default function FavoritesScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Ionicons name="heart-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>Aún no tienes bases favoritas.</Text>
+                        <Text style={styles.emptyText}>Aún no tienes bases favoritas</Text>
                     </View>
                 }
             />

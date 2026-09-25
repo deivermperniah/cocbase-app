@@ -23,7 +23,7 @@ async function shareBase(base) {
 
     if (Platform.OS === 'web' && !navigator.share) {
         await navigator.clipboard.writeText(url);
-        showMessage('Compartir', 'Enlace copiado al portapapeles.');
+        showMessage('Compartir', 'Enlace copiado al portapapeles');
         return;
     }
 

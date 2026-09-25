@@ -56,8 +56,8 @@ export function FavoritesProvider({ children }) {
         if (toggleError) {
             setFavorites(previous);
             showMessage('Favoritos', isFavorite
-                ? 'No se pudo quitar de favoritos.'
-                : 'No se pudo guardar en favoritos.');
+                ? 'No se pudo quitar de favoritos'
+                : 'No se pudo guardar en favoritos');
         }
     }, [userId]);
 

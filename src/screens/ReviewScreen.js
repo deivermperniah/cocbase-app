@@ -164,7 +164,7 @@ export default function ReviewScreen() {
             await reviewBase(base.id, 'approved');
             removeFromList(base.id);
         } catch {
-            showMessage('Comunidad', 'No se pudo aprobar la base.');
+            showMessage('Comunidad', 'No se pudo aprobar la base');
         } finally {
             setBusyId(null);
         }
@@ -176,7 +176,7 @@ export default function ReviewScreen() {
             removeFromList(base.id);
             setRejectingBase(null);
         } catch {
-            showMessage('Comunidad', 'No se pudo rechazar la base.');
+            showMessage('Comunidad', 'No se pudo rechazar la base');
         }
     };
 
@@ -230,7 +230,7 @@ export default function ReviewScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Ionicons name="checkmark-done-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>No hay bases pendientes de revisión.</Text>
+                        <Text style={styles.emptyText}>No hay bases pendientes de revisión</Text>
                     </View>
                 }
             />

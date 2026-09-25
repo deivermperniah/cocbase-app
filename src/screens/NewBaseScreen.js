@@ -10,7 +10,7 @@ export default function NewBaseScreen({ navigation }) {
     const { user } = useAuth();
 
     const handleSubmitted = (base) => {
-        showMessage('¡Base publicada!', `La base ${base.code} ya está disponible para todos.`);
+        showMessage('¡Base publicada!', `La base ${base.code} ya está disponible para todos`);
         navigation.goBack();
     };
 

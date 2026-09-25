@@ -11,11 +11,11 @@ const MIN_PASSWORD_LENGTH = 6;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const AUTH_ERRORS = {
-    invalid_credentials: 'Correo o contraseña incorrectos.',
-    email_not_confirmed: 'Confirma tu correo antes de entrar.',
-    user_already_exists: 'Ya existe una cuenta con este correo.',
-    over_email_send_rate_limit: 'Demasiados intentos. Espera unos minutos.',
-    over_request_rate_limit: 'Demasiados intentos. Espera unos minutos.',
+    invalid_credentials: 'Correo o contraseña incorrectos',
+    email_not_confirmed: 'Confirma tu correo antes de entrar',
+    user_already_exists: 'Ya existe una cuenta con este correo',
+    over_email_send_rate_limit: 'Demasiados intentos. Espera unos minutos',
+    over_request_rate_limit: 'Demasiados intentos. Espera unos minutos',
 };
 
 const MODES = {
@@ -38,7 +38,7 @@ const MODES = {
 };
 
 function getAuthErrorMessage(error) {
-    return AUTH_ERRORS[error.code] || 'No se pudo completar la acción. Inténtalo de nuevo.';
+    return AUTH_ERRORS[error.code] || 'No se pudo completar la acción. Inténtalo de nuevo';
 }
 
 function GlowCard({ children }) {
@@ -127,9 +127,9 @@ export default function AuthScreen({ navigation }) {
     };
 
     const validate = () => {
-        if (isSignUp && !fullName.trim()) return 'Escribe tu nombre.';
-        if (!EMAIL_PATTERN.test(email.trim())) return 'Escribe un correo válido.';
-        if (password.length < MIN_PASSWORD_LENGTH) return `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+        if (isSignUp && !fullName.trim()) return 'Escribe tu nombre';
+        if (!EMAIL_PATTERN.test(email.trim())) return 'Escribe un correo válido';
+        if (password.length < MIN_PASSWORD_LENGTH) return `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`;
         return null;
     };
 
@@ -153,7 +153,7 @@ export default function AuthScreen({ navigation }) {
         if (isSignUp) {
             setMode('signIn');
             setPassword('');
-            setSuccessText('Revisa tu correo para confirmar la cuenta y entrar.');
+            setSuccessText('Revisa tu correo para confirmar la cuenta y entrar');
             return;
         }
 

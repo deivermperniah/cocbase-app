@@ -163,7 +163,7 @@ export default function ImagesScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Ionicons name="images-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>Sin imágenes.</Text>
+                        <Text style={styles.emptyText}>Sin imágenes</Text>
                     </View>
                 }
             />
