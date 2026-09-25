@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Modal, BackHandler, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Modal, BackHandler, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BASE_COLUMNS, supabase } from '../lib/supabase';
@@ -14,6 +15,7 @@ import DetailHeader, { DetailHeaderButton } from '../components/DetailHeader';
 import BaseCard from '../components/BaseCard';
 import BaseActionsSheet from '../components/BaseActionsSheet';
 import ImageZoomModal from '../components/ImageZoomModal';
+import usePulseStyle from '../components/usePulseStyle';
 
 const townHallImages = {
     3: require('../../assets/images/townhalls/th3.webp'),
@@ -34,6 +36,47 @@ const townHallImages = {
     18: require('../../assets/images/townhalls/th18.webp'),
 };
 
+function TownHallCard({ level, onPress }) {
+    return (
+        <TouchableOpacity
+            style={styles.card}
+            activeOpacity={0.7}
+            onPress={onPress}
+            accessibilityRole="button"
+            accessibilityLabel={`Nivel ${level}`}
+        >
+            <Image source={townHallImages[level]} style={styles.townHallImage} contentFit="cover" />
+            <View style={styles.levelChip}>
+                <Text style={styles.levelText}>Nivel {level}</Text>
+            </View>
+        </TouchableOpacity>
+    );
+}
+
+function BaseCardSkeleton() {
+    return (
+        <View style={styles.skeletonCard}>
+            <View style={styles.skeletonImage} />
+            <View style={styles.skeletonButtons}>
+                <View style={[styles.skeletonBlock, styles.skeletonCopy]} />
+                <View style={[styles.skeletonBlock, styles.skeletonIcon]} />
+                <View style={[styles.skeletonBlock, styles.skeletonIcon]} />
+            </View>
+        </View>
+    );
+}
+
+function BasesSkeleton() {
+    const pulseStyle = usePulseStyle();
+
+    return (
+        <Animated.View style={[styles.basesList, pulseStyle]} accessibilityLabel="Cargando bases">
+            <BaseCardSkeleton />
+            <BaseCardSkeleton />
+        </Animated.View>
+    );
+}
+
 export default function BasesScreen() {
     const navigation = useNavigation();
     const { user, isAdmin } = useAuth();
@@ -53,10 +96,10 @@ export default function BasesScreen() {
     const filterOptions = ['Todos', ...BASE_TYPES];
 
     const filterDescriptions = {
-        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
-        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
-        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
-        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
+        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas',
+        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno',
+        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar',
+        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro'
     };
 
     useEffect(() => {
@@ -64,6 +107,13 @@ export default function BasesScreen() {
             fetchBases(selectedLevel);
         }
     }, [selectedLevel]);
+
+    const openLevel = (level) => {
+        setBases([]);
+        setLoading(true);
+        setSelectedLevel(level);
+        setSelectedType('Todos');
+    };
 
     const filteredBases = useMemo(() => {
         return bases.filter(base => selectedType === 'Todos' || base.type === selectedType);
@@ -157,38 +207,6 @@ export default function BasesScreen() {
         />
     ), [favoriteIds, handleToggleFavorite]);
 
-    const renderTownHallCard = (level) => {
-        return (
-            <TouchableOpacity
-                key={level}
-                style={styles.card}
-                activeOpacity={0.7}
-                onPress={() => {
-                    setBases([]);
-                    setLoading(true);
-                    setSelectedLevel(level);
-                    setSelectedType('Todos');
-                }}
-            >
-                <View style={styles.cardContent}>
-
-                    <View style={styles.imageContainer}>
-                        <Image
-                            source={townHallImages[level]}
-                            style={styles.townHallImage}
-                            contentFit="cover"
-                        />
-                    </View>
-
-
-                    <View style={styles.cardFooter}>
-                        <Text style={styles.townHallText}>Nivel {level}</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        );
-    };
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
 
@@ -258,16 +276,19 @@ export default function BasesScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.grid}>
-                        {TOWN_HALL_LEVELS.map(level => renderTownHallCard(level))}
+                        {TOWN_HALL_LEVELS.map(level => (
+                            <TownHallCard
+                                key={level}
+                                level={level}
+                                onPress={() => openLevel(level)}
+                            />
+                        ))}
                     </View>
                 </ScrollView>
             ) : (
                 <View style={styles.selectedContainer}>
                     {loading ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color="#facc15" />
-                            <Text style={styles.loadingText}>Cargando...</Text>
-                        </View>
+                        <BasesSkeleton />
                     ) : errorText ? (
                         <View style={styles.offlineContainer}>
                             <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
@@ -297,11 +318,18 @@ export default function BasesScreen() {
                                 />
                             }
                             ListEmptyComponent={
-                                <Text style={styles.emptyText}>
-                                    {selectedType === 'Todos'
-                                        ? "No hay bases disponibles para este nivel."
-                                        : "No hay bases disponibles para este filtro."}
-                                </Text>
+                                <View style={styles.empty}>
+                                    <MaterialCommunityIcons
+                                        name={selectedType === 'Todos' ? 'castle' : getBaseTypeIcon(selectedType)}
+                                        size={40}
+                                        color="#facc15"
+                                    />
+                                    <Text style={styles.emptyText}>
+                                        {selectedType === 'Todos'
+                                            ? "No hay bases disponibles para este nivel"
+                                            : "No hay bases disponibles para este filtro"}
+                                    </Text>
+                                </View>
                             }
                         />
                     )}
@@ -374,31 +402,64 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)',
     },
-    cardContent: {
-        width: '100%',
-    },
-    imageContainer: {
-        width: '100%',
-        height: 160,
-        backgroundColor: '#2a2a2a',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderBottomWidth: 2,
-        borderBottomColor: '#facc15',
-    },
     townHallImage: {
         width: '100%',
-        height: '100%',
+        height: 180,
+        backgroundColor: '#2a2a2a',
     },
-    cardFooter: {
-        padding: 10,
+    levelChip: {
+        position: 'absolute',
+        left: 10,
+        right: 10,
+        bottom: 10,
+        alignItems: 'center',
+        paddingVertical: 6,
+        borderRadius: 8,
+        backgroundColor: 'rgba(10, 10, 10, 0.75)',
+    },
+    levelText: {
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'LilitaOne',
+    },
+    skeletonCard: {
         backgroundColor: '#1a1a1a',
+        borderRadius: 12,
+        marginBottom: 15,
+        overflow: 'hidden',
     },
-    townHallText: {
-        color: '#facc15',
-        fontSize: 16,
+    skeletonImage: {
+        height: 200,
+        backgroundColor: '#2a2a2a',
+    },
+    skeletonButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        padding: 15,
+    },
+    skeletonBlock: {
+        height: 36,
+        borderRadius: 8,
+        backgroundColor: '#2a2a2a',
+    },
+    skeletonCopy: {
+        flex: 1,
+    },
+    skeletonIcon: {
+        width: 44,
+    },
+    empty: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        paddingBottom: 40,
+    },
+    emptyText: {
+        color: '#999',
         textAlign: 'center',
         fontFamily: 'LilitaOne',
+        fontSize: 16,
     },
     filterContainer: {
         backgroundColor: '#0a0a0a',
@@ -435,27 +496,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#0a0a0a',
     },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        color: '#fff',
-        marginTop: 10,
-        fontFamily: 'LilitaOne',
-        fontSize: 16,
-    },
     basesList: {
+        flexGrow: 1,
         paddingTop: 15,
         paddingLeft: 15,
         paddingRight: 15,
-    },
-    emptyText: {
-        color: '#999',
-        textAlign: 'center',
-        fontFamily: 'LilitaOne',
-        fontSize: 16,
     },
     modalOverlay: {
         flex: 1,

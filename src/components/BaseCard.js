@@ -2,14 +2,7 @@ import React, { memo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Image } from 'expo-image';
-
-const NEW_BASE_DAYS = 7;
-
-function isNewBase(createdAt) {
-    if (!createdAt) return false;
-    const diffInDays = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
-    return diffInDays <= NEW_BASE_DAYS;
-}
+import { isNewBase } from '../lib/format';
 
 function IconButton({ icon, label, onPress }) {
     return (
