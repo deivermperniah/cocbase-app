@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Image } from 'expo-image';
-import { getBaseTypeIcon } from '../lib/constants';
 
 const NEW_BASE_DAYS = 7;
 
@@ -26,7 +25,7 @@ function IconButton({ icon, label, onPress }) {
     );
 }
 
-function BaseCard({ base, isFavorite, showType = true, showLevel, onToggleFavorite, onPressImage, onOpenActions }) {
+function BaseCard({ base, isFavorite, onToggleFavorite, onPressImage, onOpenActions }) {
     const copyDisabled = base.level_th === 3 || !base.link;
 
     return (
@@ -51,15 +50,6 @@ function BaseCard({ base, isFavorite, showType = true, showLevel, onToggleFavori
                 )}
             </View>
             <View style={styles.baseInfo}>
-                {showType && (
-                    <View style={styles.typeContainer}>
-                        <MaterialCommunityIcons name={getBaseTypeIcon(base.type)} size={20} color="#facc15" />
-                        <Text style={styles.baseType}>{base.type}</Text>
-                        {showLevel && base.level_th != null && (
-                            <Text style={styles.levelText}>· Nivel {base.level_th}</Text>
-                        )}
-                    </View>
-                )}
                 <View style={styles.baseButtons}>
                     <TouchableOpacity
                         style={[styles.actionButton, copyDisabled && styles.disabledButton]}
@@ -118,23 +108,6 @@ const styles = StyleSheet.create({
     },
     baseInfo: {
         padding: 15,
-    },
-    typeContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-        gap: 8,
-    },
-    baseType: {
-        color: '#fff',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-        textTransform: 'capitalize',
-    },
-    levelText: {
-        color: '#999',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
     },
     baseButtons: {
         flexDirection: 'row',

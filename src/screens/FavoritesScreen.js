@@ -32,7 +32,6 @@ export default function FavoritesScreen() {
         <BaseCard
             base={item}
             isFavorite={favoriteIds.has(item.id)}
-            showLevel
             onToggleFavorite={toggleFavorite}
             onPressImage={setZoomImage}
             onOpenActions={setActionsBase}
