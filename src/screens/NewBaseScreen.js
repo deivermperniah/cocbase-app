@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { showMessage } from '../lib/dialogs';
 import DetailHeader from '../components/DetailHeader';
 import BaseForm from '../components/BaseForm';
+import { COLORS } from '../lib/theme';
 
 export default function NewBaseScreen({ navigation }) {
     const { user } = useAuth();
@@ -33,7 +34,7 @@ export default function NewBaseScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     flex: {
         flex: 1,

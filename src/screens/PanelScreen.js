@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,12 +10,14 @@ import { fetchDashboardStats } from '../lib/admin';
 import ScreenHeader from '../components/ScreenHeader';
 import { ListRow, ListSection } from '../components/ListSection';
 import usePulseStyle from '../components/usePulseStyle';
+import StateMessage from '../components/StateMessage';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 function StatCard({ type, count }) {
     return (
         <View style={styles.statCard}>
             <View style={styles.statIcon}>
-                <MaterialCommunityIcons name={getBaseTypeIcon(type)} size={22} color="#facc15" />
+                <MaterialCommunityIcons name={getBaseTypeIcon(type)} size={22} color={COLORS.primary} />
             </View>
             <Text style={styles.statLabel}>{type}</Text>
             <Text style={styles.statValue}>{count}</Text>
@@ -76,11 +78,12 @@ export default function PanelScreen() {
         if (!stats) {
             return error ? (
                 <View style={styles.statusBox}>
-                    <Ionicons name="cloud-offline-outline" size={32} color="#facc15" />
-                    <Text style={styles.statusText}>No se pudo cargar</Text>
-                    <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
-                        <Text style={styles.retryButtonText}>Reintentar</Text>
-                    </TouchableOpacity>
+                    <StateMessage
+                        icon="cloud-offline-outline"
+                        message="No se pudo cargar"
+                        actionLabel="Reintentar"
+                        onAction={handleRefresh}
+                    />
                 </View>
             ) : (
                 <PanelSkeleton />
@@ -90,7 +93,7 @@ export default function PanelScreen() {
         return (
             <>
                 <LinearGradient
-                    colors={['#fde047', '#facc15', '#eab308']}
+                    colors={[COLORS.primaryLight, COLORS.primary, COLORS.primaryDark]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.hero}
@@ -118,9 +121,7 @@ export default function PanelScreen() {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        colors={['#facc15']}
-                        tintColor="#facc15"
-                        progressBackgroundColor="#1a1a1a"
+                        {...REFRESH_CONTROL_THEME}
                     />
                 }
             >
@@ -145,7 +146,7 @@ export default function PanelScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     content: {
         padding: 15,
@@ -157,35 +158,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10,
         borderRadius: 12,
-        backgroundColor: '#1a1a1a',
-    },
-    statusText: {
-        color: '#fff',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-    },
-    retryButton: {
-        backgroundColor: '#facc15',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
-    },
-    retryButtonText: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
+        backgroundColor: COLORS.surface,
     },
     skeleton: {
         gap: 15,
     },
     skeletonHero: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         boxShadow: 'none',
         gap: 10,
     },
     skeletonLine: {
         borderRadius: 6,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     skeletonHeroValue: {
         width: 70,
@@ -196,7 +181,7 @@ const styles = StyleSheet.create({
         height: 14,
     },
     skeletonIcon: {
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     skeletonLabel: {
         width: '60%',
@@ -216,15 +201,15 @@ const styles = StyleSheet.create({
         boxShadow: '0px 10px 20px rgba(250, 204, 21, 0.15)',
     },
     heroValue: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 44,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         lineHeight: 48,
     },
     heroLabel: {
         color: 'rgba(0, 0, 0, 0.6)',
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     statsGrid: {
         flexDirection: 'row',
@@ -237,7 +222,7 @@ const styles = StyleSheet.create({
         padding: 15,
         gap: 4,
         borderRadius: 12,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
     },
     statIcon: {
         width: 44,
@@ -249,13 +234,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     statLabel: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     statValue: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 28,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -10,6 +9,8 @@ import SignInPrompt from '../components/SignInPrompt';
 import BaseCard from '../components/BaseCard';
 import BaseActionsSheet from '../components/BaseActionsSheet';
 import ImageZoomModal from '../components/ImageZoomModal';
+import StateMessage from '../components/StateMessage';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 export default function FavoritesScreen() {
     const { user, isAdmin } = useAuth();
@@ -46,7 +47,7 @@ export default function FavoritesScreen() {
         if (loading) {
             return (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color="#facc15" />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                     <Text style={styles.loadingText}>Cargando...</Text>
                 </View>
             );
@@ -54,13 +55,12 @@ export default function FavoritesScreen() {
 
         if (error && favorites.length === 0) {
             return (
-                <View style={styles.centerContainer}>
-                    <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                    <Text style={styles.messageText}>No se pudo cargar</Text>
-                    <TouchableOpacity style={styles.primaryButton} onPress={handleRefresh}>
-                        <Text style={styles.primaryButtonText}>Reintentar</Text>
-                    </TouchableOpacity>
-                </View>
+                <StateMessage
+                    icon="cloud-offline-outline"
+                    message="No se pudo cargar"
+                    actionLabel="Reintentar"
+                    onAction={handleRefresh}
+                />
             );
         }
 
@@ -79,16 +79,11 @@ export default function FavoritesScreen() {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        colors={['#facc15']}
-                        tintColor="#facc15"
-                        progressBackgroundColor="#1a1a1a"
+                        {...REFRESH_CONTROL_THEME}
                     />
                 }
                 ListEmptyComponent={
-                    <View style={styles.empty}>
-                        <Ionicons name="heart-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>Aún no tienes bases favoritas.</Text>
-                    </View>
+                    <StateMessage icon="heart-outline" message="Aún no tienes bases favoritas." />
                 }
             />
         );
@@ -113,7 +108,7 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     content: {
         flex: 1,
@@ -124,48 +119,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 15,
     },
-    messageText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'LilitaOne',
-        textAlign: 'center',
-        marginTop: 10,
-        marginBottom: 15,
-    },
     loadingText: {
-        color: '#fff',
+        color: COLORS.text,
         marginTop: 10,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         fontSize: 16,
-    },
-    primaryButton: {
-        backgroundColor: '#facc15',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
-        boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
-    },
-    primaryButtonText: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
     },
     basesList: {
         flexGrow: 1,
         paddingTop: 15,
         paddingLeft: 15,
         paddingRight: 15,
-    },
-    empty: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-    },
-    emptyText: {
-        color: '#999',
-        textAlign: 'center',
-        fontFamily: 'LilitaOne',
-        fontSize: 16,
     },
 });

@@ -8,6 +8,7 @@ import { confirmAction } from '../lib/dialogs';
 import { WEB_URL } from '../lib/constants';
 import ScreenHeader from '../components/ScreenHeader';
 import { ListRow, ListSection, listStyles } from '../components/ListSection';
+import { COLORS, FONT } from '../lib/theme';
 
 function ProfileHeader({ name, email, isAdmin, isLast }) {
     return (
@@ -72,7 +73,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     content: {
         padding: 15,
@@ -88,14 +89,14 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     avatarText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 22,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     profileInfo: {
         flex: 1,
@@ -108,14 +109,14 @@ const styles = StyleSheet.create({
     },
     profileName: {
         flexShrink: 1,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     profileEmail: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     roleBadge: {
         paddingHorizontal: 8,
@@ -124,14 +125,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(250, 204, 21, 0.15)',
     },
     roleBadgeText: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     disclaimer: {
-        color: '#666',
+        color: COLORS.textSubtle,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
         lineHeight: 16,
         paddingHorizontal: 10,

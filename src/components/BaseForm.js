@@ -12,6 +12,7 @@ import {
     getBaseLinkId,
     submitBase,
 } from '../lib/baseSubmission';
+import { COLORS, FONT } from '../lib/theme';
 
 const LINK_FREE_LEVEL = 3;
 
@@ -112,7 +113,7 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
                     <TextInput
                         style={[styles.input, linkError && styles.inputError]}
                         placeholder="https://link.clashofclans.com/..."
-                        placeholderTextColor="#666"
+                        placeholderTextColor={COLORS.textSubtle}
                         value={link}
                         onChangeText={setLink}
                         autoCapitalize="none"
@@ -141,13 +142,13 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
                             accessibilityRole="button"
                             accessibilityLabel="Quitar fotografía"
                         >
-                            <Ionicons name="close" size={18} color="#fff" />
+                            <Ionicons name="close" size={18} color={COLORS.text} />
                         </TouchableOpacity>
                     )}
                 </View>
             ) : (
                 <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.7} disabled={submitting}>
-                    <Ionicons name="image-outline" size={28} color="#999" />
+                    <Ionicons name="image-outline" size={28} color={COLORS.textMuted} />
                     <Text style={styles.imagePickerTitle}>Subir captura</Text>
                     <Text style={styles.imagePickerHint}>JPG, PNG o WebP · máx. 5 MB</Text>
                 </TouchableOpacity>
@@ -159,8 +160,8 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
                 disabled={!isFormValid || submitting}
             >
                 {submitting
-                    ? <ActivityIndicator color="#000" />
-                    : <Ionicons name={publish ? 'checkmark-circle-outline' : 'add-circle-outline'} size={20} color="#000" />}
+                    ? <ActivityIndicator color={COLORS.onPrimary} />
+                    : <Ionicons name={publish ? 'checkmark-circle-outline' : 'add-circle-outline'} size={20} color={COLORS.onPrimary} />}
                 <Text style={styles.submitButtonText}>
                     {submitting ? 'Procesando...' : publish ? 'Publicar' : 'Enviar a revisión'}
                 </Text>
@@ -171,20 +172,20 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         padding: 15,
     },
     cardTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginBottom: 5,
     },
     label: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginTop: 15,
         marginBottom: 8,
     },
@@ -195,36 +196,36 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     chipActive: {
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
     },
     chipText: {
-        color: '#999',
-        fontFamily: 'LilitaOne',
+        color: COLORS.textMuted,
+        fontFamily: FONT,
         fontSize: 14,
     },
     chipTextActive: {
-        color: '#000',
+        color: COLORS.onPrimary,
     },
     input: {
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#333',
+        borderColor: COLORS.border,
         paddingHorizontal: 15,
         paddingVertical: 12,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
     },
     inputError: {
-        borderColor: '#f87171',
+        borderColor: COLORS.danger,
     },
     errorText: {
-        color: '#f87171',
+        color: COLORS.danger,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginTop: 6,
     },
     imagePicker: {
@@ -235,24 +236,24 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 2,
         borderStyle: 'dashed',
-        borderColor: '#333',
-        backgroundColor: '#141414',
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surfaceDeep,
     },
     imagePickerTitle: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     imagePickerHint: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     preview: {
         width: '100%',
         height: 180,
         borderRadius: 12,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     changeImageBadge: {
         position: 'absolute',
@@ -264,9 +265,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(10, 10, 10, 0.7)',
     },
     changeImageText: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     removeImageButton: {
         position: 'absolute',
@@ -287,15 +288,15 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingVertical: 14,
         borderRadius: 25,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
     },
     submitButtonDisabled: {
         opacity: 0.5,
     },
     submitButtonText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

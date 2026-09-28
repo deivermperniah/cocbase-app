@@ -22,6 +22,7 @@ import PanelScreen from './src/screens/PanelScreen';
 import NewBaseScreen from './src/screens/NewBaseScreen';
 import ReviewScreen from './src/screens/ReviewScreen';
 import ImagesScreen from './src/screens/ImagesScreen';
+import { COLORS, FONT } from './src/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,25 +49,24 @@ function MainTabs() {
     <Tab.Navigator
         detachInactiveScreens={false}
         screenOptions={({ route }) => ({
-        sceneStyle: { backgroundColor: '#0a0a0a' },
+        sceneStyle: { backgroundColor: COLORS.background },
         tabBarIcon: ({ focused, color, size }) => {
           const [activeIcon, inactiveIcon] = TAB_ICONS[route.name];
           return <Ionicons name={focused ? activeIcon : inactiveIcon} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#facc15',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.textMuted,
         tabBarStyle: {
-          backgroundColor: '#121212',
-          borderTopColor: '#333',
+          backgroundColor: COLORS.surfaceDeep,
+          borderTopColor: COLORS.border,
           height: height,
           paddingBottom: paddingBottom,
           paddingTop: 10,
         },
         tabBarLabelStyle: {
-          fontFamily: 'LilitaOne',
+          fontFamily: FONT,
         },
         headerShown: false,
-        lazy: false, // Render all screens immediately
       })}
     >
       <Tab.Screen name="Bases" component={BasesScreen} />
@@ -83,7 +83,7 @@ function RootNavigator() {
   const { isAdmin } = useAuth();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0a0a0a' } }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.background } }}>
       <Stack.Screen name="Tabs" component={MainTabs} />
       <Stack.Screen name="Auth" component={AuthScreen} options={{ presentation: 'modal' }} />
       {isAdmin && (
@@ -99,7 +99,7 @@ function RootNavigator() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    LilitaOne: require('./assets/fonts/LilitaOne-Regular.ttf'),
+    [FONT]: require('./assets/fonts/LilitaOne-Regular.ttf'),
     ...Ionicons.font,
     ...MaterialCommunityIcons.font,
   });
@@ -120,7 +120,7 @@ export default function App() {
         <DialogProvider>
           <AuthProvider>
             <FavoritesProvider>
-              <View style={{ flex: 1, backgroundColor: '#0a0a0a' }} onLayout={onLayoutRootView}>
+              <View style={{ flex: 1, backgroundColor: COLORS.background }} onLayout={onLayoutRootView}>
                 <NavigationContainer>
                   <StatusBar style="light" />
                   <RootNavigator />

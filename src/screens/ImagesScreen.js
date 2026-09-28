@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { confirmAndDeleteImage, fetchImagesPage, fetchUsedImageUrls } from '../lib/admin';
 import DetailHeader from '../components/DetailHeader';
 import ImageZoomModal from '../components/ImageZoomModal';
+import StateMessage from '../components/StateMessage';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 function formatMegabytes(bytes) {
     return (bytes / (1024 * 1024)).toFixed(2);
@@ -31,7 +33,7 @@ function ImageCard({ image, inUse, onPressImage, onDelete }) {
                     accessibilityRole="button"
                     accessibilityLabel="Eliminar imagen"
                 >
-                    <Ionicons name="trash-outline" size={20} color="#f87171" />
+                    <Ionicons name="trash-outline" size={20} color={COLORS.danger} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -107,11 +109,11 @@ export default function ImagesScreen() {
     const statsHeader = images.length > 0 ? (
         <View style={styles.stats}>
             <View style={styles.stat}>
-                <Ionicons name="images-outline" size={16} color="#facc15" />
+                <Ionicons name="images-outline" size={16} color={COLORS.primary} />
                 <Text style={styles.statText}>{images.length}{hasMore ? '+' : ''} imágenes</Text>
             </View>
             <View style={styles.stat}>
-                <Ionicons name="server-outline" size={16} color="#facc15" />
+                <Ionicons name="server-outline" size={16} color={COLORS.primary} />
                 <Text style={styles.statText}>{formatMegabytes(totalBytes)} MB</Text>
             </View>
         </View>
@@ -121,20 +123,19 @@ export default function ImagesScreen() {
         if (loading) {
             return (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color="#facc15" />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             );
         }
 
         if (error && images.length === 0) {
             return (
-                <View style={styles.centerContainer}>
-                    <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                    <Text style={styles.messageText}>No se pudo cargar</Text>
-                    <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
-                        <Text style={styles.retryButtonText}>Reintentar</Text>
-                    </TouchableOpacity>
-                </View>
+                <StateMessage
+                    icon="cloud-offline-outline"
+                    message="No se pudo cargar"
+                    actionLabel="Reintentar"
+                    onAction={handleRefresh}
+                />
             );
         }
 
@@ -154,17 +155,12 @@ export default function ImagesScreen() {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        colors={['#facc15']}
-                        tintColor="#facc15"
-                        progressBackgroundColor="#1a1a1a"
+                        {...REFRESH_CONTROL_THEME}
                     />
                 }
-                ListFooterComponent={loadingMore ? <ActivityIndicator color="#facc15" style={styles.footerLoader} /> : null}
+                ListFooterComponent={loadingMore ? <ActivityIndicator color={COLORS.primary} style={styles.footerLoader} /> : null}
                 ListEmptyComponent={
-                    <View style={styles.empty}>
-                        <Ionicons name="images-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>No hay imágenes.</Text>
-                    </View>
+                    <StateMessage icon="images-outline" message="No hay imágenes." />
                 }
             />
         );
@@ -182,7 +178,7 @@ export default function ImagesScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     flex: {
         flex: 1,
@@ -192,24 +188,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 15,
-    },
-    messageText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'LilitaOne',
-        marginTop: 10,
-        marginBottom: 15,
-    },
-    retryButton: {
-        backgroundColor: '#facc15',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
-    },
-    retryButtonText: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
     },
     list: {
         padding: 15,
@@ -226,33 +204,22 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     statText: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     footerLoader: {
         paddingVertical: 10,
     },
-    empty: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-    },
-    emptyText: {
-        color: '#999',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-    },
     card: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         overflow: 'hidden',
     },
     image: {
         width: '100%',
         height: 180,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     usageBadge: {
         position: 'absolute',
@@ -263,20 +230,20 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     usageBadgeInUse: {
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
     },
     usageBadgeOrphan: {
-        backgroundColor: '#dc2626',
+        backgroundColor: COLORS.dangerStrong,
     },
     usageText: {
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     usageTextInUse: {
-        color: '#000',
+        color: COLORS.onPrimary,
     },
     usageTextOrphan: {
-        color: '#fff',
+        color: COLORS.text,
     },
     cardBody: {
         flexDirection: 'row',
@@ -286,15 +253,15 @@ const styles = StyleSheet.create({
     },
     imageName: {
         flex: 1,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     deleteButton: {
         width: 44,
         height: 36,
         borderRadius: 8,
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
     },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { COLORS, FONT } from '../lib/theme';
 
 export default function ScreenHeader({ title, subtitle }) {
     return (
@@ -15,19 +16,19 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingTop: 15,
         paddingBottom: 15,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
         borderBottomWidth: 1,
-        borderBottomColor: '#333',
+        borderBottomColor: COLORS.border,
     },
     headerTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 28,
         marginBottom: 5,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     headerSubtitle: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

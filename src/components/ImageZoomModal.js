@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Zoomable } from '@likashefqet/react-native-image-zoom';
+import { COLORS } from '../lib/theme';
 
 export default function ImageZoomModal({ uri, onClose }) {
     const insets = useSafeAreaInsets();
@@ -40,7 +41,7 @@ export default function ImageZoomModal({ uri, onClose }) {
                     accessibilityRole="button"
                     accessibilityLabel="Cerrar"
                 >
-                    <Ionicons name="close" size={25} color="#facc15" />
+                    <Ionicons name="close" size={25} color={COLORS.primary} />
                 </TouchableOpacity>
             </GestureHandlerRootView>
         </Modal>
@@ -50,7 +51,7 @@ export default function ImageZoomModal({ uri, onClose }) {
 const styles = StyleSheet.create({
     zoomContainer: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: COLORS.onPrimary,
     },
     zoomable: {
         flex: 1,

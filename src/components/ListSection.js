@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated from 'react-native-reanimated';
 import usePulseStyle from './usePulseStyle';
+import { COLORS, FONT } from '../lib/theme';
 
 function BadgeSkeleton() {
     const pulseStyle = usePulseStyle();
@@ -17,7 +18,7 @@ export function ListRow({ icon, label, value, badge, badgeLoading, onPress, isLa
             disabled={!onPress}
             activeOpacity={0.7}
         >
-            <Ionicons name={icon} size={20} color="#facc15" />
+            <Ionicons name={icon} size={20} color={COLORS.primary} />
             <Text style={styles.rowLabel}>{label}</Text>
             {value != null && <Text style={styles.rowValue} numberOfLines={1}>{value}</Text>}
             {badgeLoading && <BadgeSkeleton />}
@@ -26,7 +27,7 @@ export function ListRow({ icon, label, value, badge, badgeLoading, onPress, isLa
                     <Text style={[styles.badgeText, badge === 0 && styles.badgeTextEmpty]}>{badge}</Text>
                 </View>
             )}
-            {onPress && <Ionicons name="chevron-forward" size={18} color="#666" />}
+            {onPress && <Ionicons name="chevron-forward" size={18} color={COLORS.textSubtle} />}
         </TouchableOpacity>
     );
 }
@@ -47,7 +48,7 @@ export function ListSection({ title, children }) {
 export const listStyles = StyleSheet.create({
     divider: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#333',
+        borderBottomColor: COLORS.border,
     },
 });
 
@@ -56,14 +57,14 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     sectionTitle: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textTransform: 'uppercase',
         paddingHorizontal: 5,
     },
     sectionCard: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         overflow: 'hidden',
     },
@@ -76,38 +77,38 @@ const styles = StyleSheet.create({
     },
     rowLabel: {
         flex: 1,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     rowValue: {
         flexShrink: 1,
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     badge: {
         minWidth: 24,
         height: 24,
         paddingHorizontal: 7,
         borderRadius: 12,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     badgeSkeleton: {
         width: 24,
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
     },
     badgeEmpty: {
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
     },
     badgeText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     badgeTextEmpty: {
-        color: '#999',
+        color: COLORS.textMuted,
     },
 });

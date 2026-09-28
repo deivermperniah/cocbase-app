@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showMessage } from '../lib/dialogs';
 import { getBaseTypeIcon } from '../lib/constants';
 import InfoBadge from './InfoBadge';
+import { COLORS, FONT } from '../lib/theme';
 
 const DEFAULT_DESIGNER = 'Deiver Pernia';
 
@@ -40,11 +41,11 @@ function DetailRow({ label, value, isFirst }) {
 }
 
 function ActionRow({ icon, label, onPress, danger, isFirst }) {
-    const color = danger ? '#f87171' : '#fff';
+    const color = danger ? COLORS.danger : COLORS.text;
 
     return (
         <TouchableOpacity style={[styles.actionRow, !isFirst && styles.divider]} onPress={onPress} activeOpacity={0.7}>
-            <Ionicons name={icon} size={20} color={danger ? '#f87171' : '#facc15'} />
+            <Ionicons name={icon} size={20} color={danger ? COLORS.danger : COLORS.primary} />
             <Text style={[styles.actionLabel, { color }]}>{label}</Text>
         </TouchableOpacity>
     );
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     sheet: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         paddingHorizontal: 20,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#444',
+        backgroundColor: COLORS.borderStrong,
         marginBottom: 5,
     },
     badges: {
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     group: {
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
         borderRadius: 12,
         overflow: 'hidden',
     },
@@ -147,18 +148,18 @@ const styles = StyleSheet.create({
     },
     divider: {
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: '#3a3a3a',
+        borderTopColor: COLORS.borderStrong,
     },
     detailLabel: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     detailValue: {
         flexShrink: 1,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     actionRow: {
         flexDirection: 'row',
@@ -169,18 +170,18 @@ const styles = StyleSheet.create({
     },
     actionLabel: {
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     closeButton: {
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     closeButtonText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONT } from '../lib/theme';
 
 export default function DetailHeader({ title, onBack, right, bordered = true }) {
     const navigation = useNavigation();
@@ -14,7 +15,7 @@ export default function DetailHeader({ title, onBack, right, bordered = true }) 
                 accessibilityRole="button"
                 accessibilityLabel="Volver"
             >
-                <Ionicons name="arrow-back" size={25} color="#facc15" />
+                <Ionicons name="arrow-back" size={25} color={COLORS.primary} />
             </TouchableOpacity>
             <Text style={styles.title} numberOfLines={1}>{title}</Text>
             {right ?? <View style={styles.sidePlaceholder} />}
@@ -30,7 +31,7 @@ export function DetailHeaderButton({ icon, label, onPress }) {
             accessibilityRole="button"
             accessibilityLabel={label}
         >
-            <Ionicons name={icon} size={25} color="#facc15" />
+            <Ionicons name={icon} size={25} color={COLORS.primary} />
         </TouchableOpacity>
     );
 }
@@ -43,11 +44,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingTop: 15,
         paddingBottom: 15,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     bordered: {
         borderBottomWidth: 1,
-        borderBottomColor: '#333',
+        borderBottomColor: COLORS.border,
     },
     sideButton: {
         padding: 5,
@@ -57,8 +58,8 @@ const styles = StyleSheet.create({
     },
     title: {
         flexShrink: 1,
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

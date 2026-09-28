@@ -12,6 +12,8 @@ import { formatRelativeDate } from '../lib/format';
 import DetailHeader from '../components/DetailHeader';
 import ImageZoomModal from '../components/ImageZoomModal';
 import InfoBadge from '../components/InfoBadge';
+import StateMessage from '../components/StateMessage';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
     const authorName = base.profiles?.full_name || 'Sin nombre';
@@ -51,8 +53,8 @@ function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
                         disabled={busy}
                     >
                         {busy
-                            ? <ActivityIndicator size="small" color="#000" />
-                            : <Ionicons name="checkmark" size={18} color="#000" />}
+                            ? <ActivityIndicator size="small" color={COLORS.onPrimary} />
+                            : <Ionicons name="checkmark" size={18} color={COLORS.onPrimary} />}
                         <Text style={styles.approveText}>Aprobar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -60,7 +62,7 @@ function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
                         onPress={() => onReject(base)}
                         disabled={busy}
                     >
-                        <Ionicons name="close" size={18} color="#f87171" />
+                        <Ionicons name="close" size={18} color={COLORS.danger} />
                         <Text style={styles.rejectText}>Rechazar</Text>
                     </TouchableOpacity>
                     {base.link && (
@@ -71,7 +73,7 @@ function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
                             accessibilityRole="button"
                             accessibilityLabel="Abrir enlace de la base"
                         >
-                            <Ionicons name="open-outline" size={20} color="#facc15" />
+                            <Ionicons name="open-outline" size={20} color={COLORS.primary} />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -105,7 +107,7 @@ function RejectModal({ base, onCancel, onConfirm }) {
                         value={note}
                         onChangeText={setNote}
                         placeholder="Ej: la captura no corresponde a la base"
-                        placeholderTextColor="#666"
+                        placeholderTextColor={COLORS.textSubtle}
                         multiline
                         maxLength={200}
                         editable={!submitting}
@@ -116,7 +118,7 @@ function RejectModal({ base, onCancel, onConfirm }) {
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.modalButton, styles.confirmRejectButton]} onPress={confirm} disabled={submitting}>
                             {submitting
-                                ? <ActivityIndicator size="small" color="#fff" />
+                                ? <ActivityIndicator size="small" color={COLORS.text} />
                                 : <Text style={styles.confirmRejectText}>Rechazar</Text>}
                         </TouchableOpacity>
                     </View>
@@ -194,20 +196,19 @@ export default function ReviewScreen() {
         if (loading) {
             return (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color="#facc15" />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             );
         }
 
         if (error && pending.length === 0) {
             return (
-                <View style={styles.centerContainer}>
-                    <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                    <Text style={styles.messageText}>No se pudo cargar</Text>
-                    <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
-                        <Text style={styles.retryButtonText}>Reintentar</Text>
-                    </TouchableOpacity>
-                </View>
+                <StateMessage
+                    icon="cloud-offline-outline"
+                    message="No se pudo cargar"
+                    actionLabel="Reintentar"
+                    onAction={handleRefresh}
+                />
             );
         }
 
@@ -222,16 +223,11 @@ export default function ReviewScreen() {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        colors={['#facc15']}
-                        tintColor="#facc15"
-                        progressBackgroundColor="#1a1a1a"
+                        {...REFRESH_CONTROL_THEME}
                     />
                 }
                 ListEmptyComponent={
-                    <View style={styles.empty}>
-                        <Ionicons name="checkmark-done-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>No hay bases pendientes de revisión.</Text>
-                    </View>
+                    <StateMessage icon="checkmark-done-outline" message="No hay bases pendientes de revisión." />
                 }
             />
         );
@@ -250,7 +246,7 @@ export default function ReviewScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     flex: {
         flex: 1,
@@ -261,50 +257,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 15,
     },
-    messageText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'LilitaOne',
-        marginTop: 10,
-        marginBottom: 15,
-    },
-    retryButton: {
-        backgroundColor: '#facc15',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
-    },
-    retryButtonText: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
-    },
     list: {
         padding: 15,
         gap: 15,
         flexGrow: 1,
     },
-    empty: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-    },
-    emptyText: {
-        color: '#999',
-        fontSize: 16,
-        fontFamily: 'LilitaOne',
-        textAlign: 'center',
-    },
     card: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         overflow: 'hidden',
     },
     image: {
         width: '100%',
         height: 200,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     imageShade: {
         position: 'absolute',
@@ -335,25 +301,25 @@ const styles = StyleSheet.create({
         width: 38,
         height: 38,
         borderRadius: 19,
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
     },
     avatarText: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 17,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     authorName: {
         flex: 1,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     date: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     actions: {
         flexDirection: 'row',
@@ -372,26 +338,26 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     approveButton: {
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
     },
     approveText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     rejectButton: {
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
     },
     rejectText: {
-        color: '#f87171',
+        color: COLORS.danger,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     linkButton: {
         width: 44,
         height: 36,
         borderRadius: 8,
-        backgroundColor: '#333',
+        backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -404,7 +370,7 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '90%',
         maxWidth: 420,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 20,
         borderWidth: 1,
         borderColor: 'rgba(239, 68, 68, 0.2)',
@@ -412,25 +378,25 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     modalTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 20,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
         marginBottom: 5,
     },
     modalLabel: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     noteInput: {
         minHeight: 90,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#333',
-        backgroundColor: '#2a2a2a',
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surfaceAlt,
         padding: 12,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
         textAlignVertical: 'top',
     },
@@ -447,21 +413,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelButton: {
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
         borderWidth: 1,
-        borderColor: '#333',
+        borderColor: COLORS.border,
     },
     cancelText: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     confirmRejectButton: {
-        backgroundColor: '#dc2626',
+        backgroundColor: COLORS.dangerStrong,
     },
     confirmRejectText: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

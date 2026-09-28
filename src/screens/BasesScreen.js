@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Modal, BackHandler, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
 import Animated from 'react-native-reanimated';
@@ -16,6 +16,8 @@ import BaseCard from '../components/BaseCard';
 import BaseActionsSheet from '../components/BaseActionsSheet';
 import ImageZoomModal from '../components/ImageZoomModal';
 import usePulseStyle from '../components/usePulseStyle';
+import StateMessage from '../components/StateMessage';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 const townHallImages = {
     3: require('../../assets/images/townhalls/th3.webp'),
@@ -52,6 +54,15 @@ function TownHallCard({ level, onPress }) {
         </TouchableOpacity>
     );
 }
+
+const FILTER_OPTIONS = ['Todos', ...BASE_TYPES];
+
+const FILTER_DESCRIPTIONS = {
+    'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
+    'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
+    'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
+    'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
+};
 
 function BaseCardSkeleton() {
     return (
@@ -93,15 +104,6 @@ export default function BasesScreen() {
     const levelRef = useRef(selectedLevel);
     levelRef.current = selectedLevel;
 
-    const filterOptions = ['Todos', ...BASE_TYPES];
-
-    const filterDescriptions = {
-        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
-        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
-        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
-        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
-    };
-
     useEffect(() => {
         if (selectedLevel) {
             fetchBases(selectedLevel);
@@ -136,48 +138,28 @@ export default function BasesScreen() {
         }, [selectedLevel])
     );
 
-    const fetchBases = async (level, { isRetry = false, isRefresh = false } = {}) => {
+    const fetchBases = async (level, { isRefresh = false } = {}) => {
         if (isRefresh) {
             setRefreshing(true);
         } else {
             setLoading(true);
         }
         setErrorText(null);
-        const startTime = Date.now();
-        let nextBases = null;
-        let nextError = null;
 
-        try {
-            let query = supabase
-                .from('bases')
-                .select(BASE_COLUMNS)
-                .eq('level_th', level)
-                .eq('status', 'approved')
-                .order('created_at', { ascending: false });
-
-            const { data, error } = await query;
-
-            if (error) {
-                nextError = /network|fetch/i.test(error.message) ? 'Sin conexión' : 'No se pudo cargar';
-            } else {
-                nextBases = data || [];
-            }
-        } catch (error) {
-            console.error('Error fetching bases:', error);
-            nextError = 'Sin conexión';
-        }
-
-        if (isRetry) {
-            const duration = Date.now() - startTime;
-            if (duration < 600) {
-                await new Promise(resolve => setTimeout(resolve, 600 - duration));
-            }
-        }
+        const { data, error } = await supabase
+            .from('bases')
+            .select(BASE_COLUMNS)
+            .eq('level_th', level)
+            .eq('status', 'approved')
+            .order('created_at', { ascending: false });
 
         if (levelRef.current !== level) return;
 
-        if (nextBases) setBases(nextBases);
-        setErrorText(nextError);
+        if (error) {
+            setErrorText(/network|fetch/i.test(error.message) ? 'Sin conexión' : 'No se pudo cargar');
+        } else {
+            setBases(data);
+        }
         setLoading(false);
         setRefreshing(false);
     };
@@ -234,7 +216,7 @@ export default function BasesScreen() {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.filterContent}
                         >
-                            {filterOptions.map((type) => {
+                            {FILTER_OPTIONS.map((type) => {
                                 const isActive = selectedType === type;
                                 return (
                                     <TouchableOpacity
@@ -249,7 +231,7 @@ export default function BasesScreen() {
                                             <MaterialCommunityIcons
                                                 name={getBaseTypeIcon(type)}
                                                 size={16}
-                                                color={isActive ? '#000' : '#999'}
+                                                color={isActive ? COLORS.onPrimary : COLORS.textMuted}
                                             />
                                         )}
                                         <Text style={[
@@ -290,13 +272,12 @@ export default function BasesScreen() {
                     {loading ? (
                         <BasesSkeleton />
                     ) : errorText ? (
-                        <View style={styles.offlineContainer}>
-                            <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                            <Text style={styles.offlineText}>{errorText}</Text>
-                            <TouchableOpacity style={styles.retryButton} onPress={() => fetchBases(selectedLevel, { isRetry: true })}>
-                                <Text style={styles.retryButtonText}>Reintentar</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <StateMessage
+                            icon="cloud-offline-outline"
+                            message={errorText}
+                            actionLabel="Reintentar"
+                            onAction={() => fetchBases(selectedLevel)}
+                        />
                     ) : (
                         <FlatList
                             data={filteredBases}
@@ -312,24 +293,17 @@ export default function BasesScreen() {
                                 <RefreshControl
                                     refreshing={refreshing}
                                     onRefresh={() => fetchBases(selectedLevel, { isRefresh: true })}
-                                    colors={['#facc15']}
-                                    tintColor="#facc15"
-                                    progressBackgroundColor="#1a1a1a"
+                                    {...REFRESH_CONTROL_THEME}
                                 />
                             }
                             ListEmptyComponent={
-                                <View style={styles.empty}>
-                                    <MaterialCommunityIcons
-                                        name={selectedType === 'Todos' ? 'castle' : getBaseTypeIcon(selectedType)}
-                                        size={40}
-                                        color="#facc15"
-                                    />
-                                    <Text style={styles.emptyText}>
-                                        {selectedType === 'Todos'
-                                            ? "Aún no hay bases para este nivel."
-                                            : "No hay bases de este tipo en este nivel."}
-                                    </Text>
-                                </View>
+                                <StateMessage
+                                    iconSet="mci"
+                                    icon={selectedType === 'Todos' ? 'castle' : getBaseTypeIcon(selectedType)}
+                                    message={selectedType === 'Todos'
+                                        ? 'Aún no hay bases para este nivel.'
+                                        : 'No hay bases de este tipo en este nivel.'}
+                                />
                             }
                         />
                     )}
@@ -353,7 +327,7 @@ export default function BasesScreen() {
                         <Text style={styles.modalTitle}>Tipos de bases</Text>
 
                         <ScrollView style={styles.infoScroll} showsVerticalScrollIndicator={false}>
-                            {Object.entries(filterDescriptions).map(([type, description]) => (
+                            {Object.entries(FILTER_DESCRIPTIONS).map(([type, description]) => (
                                 <View key={type} style={styles.infoItem}>
                                     <Text style={styles.infoTypeTitle}>{type}</Text>
                                     <Text style={styles.infoTypeDescription}>{description}</Text>
@@ -380,7 +354,7 @@ export default function BasesScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     scrollView: {
         flex: 1,
@@ -398,14 +372,14 @@ const styles = StyleSheet.create({
         width: '48%',
         marginBottom: 15,
         borderRadius: 12,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         overflow: 'hidden',
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)',
     },
     townHallImage: {
         width: '100%',
         height: 180,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     levelChip: {
         position: 'absolute',
@@ -418,19 +392,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(10, 10, 10, 0.75)',
     },
     levelText: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     skeletonCard: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         marginBottom: 15,
         overflow: 'hidden',
     },
     skeletonImage: {
         height: 200,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     skeletonButtons: {
         flexDirection: 'row',
@@ -440,7 +414,7 @@ const styles = StyleSheet.create({
     skeletonBlock: {
         height: 36,
         borderRadius: 8,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
     },
     skeletonCopy: {
         flex: 1,
@@ -448,24 +422,11 @@ const styles = StyleSheet.create({
     skeletonIcon: {
         width: 44,
     },
-    empty: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-        paddingBottom: 40,
-    },
-    emptyText: {
-        color: '#999',
-        textAlign: 'center',
-        fontFamily: 'LilitaOne',
-        fontSize: 16,
-    },
     filterContainer: {
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
         paddingBottom: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#333',
+        borderBottomColor: COLORS.border,
     },
     filterContent: {
         paddingHorizontal: 15,
@@ -478,23 +439,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
     },
     filterButtonActive: {
-        backgroundColor: '#facc15',
-        borderColor: '#facc15',
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
     },
     filterText: {
-        color: '#999',
-        fontFamily: 'LilitaOne',
+        color: COLORS.textMuted,
+        fontFamily: FONT,
         fontSize: 14,
     },
     filterTextActive: {
-        color: '#000',
+        color: COLORS.onPrimary,
     },
     selectedContainer: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     basesList: {
         flexGrow: 1,
@@ -509,28 +470,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalContent: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 20,
         padding: 15,
         alignItems: 'center',
         width: '80%',
     },
     modalTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginBottom: 5,
     },
     modalButton: {
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         paddingHorizontal: 30,
         paddingVertical: 12,
         borderRadius: 25,
     },
     modalButtonText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     infoScroll: {
         paddingTop: 5,
@@ -539,43 +500,19 @@ const styles = StyleSheet.create({
     infoItem: {
         marginBottom: 15,
         borderLeftWidth: 3,
-        borderLeftColor: '#facc15',
+        borderLeftColor: COLORS.primary,
         paddingLeft: 10,
     },
     infoTypeTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginBottom: 5,
     },
     infoTypeDescription: {
-        color: '#ccc',
+        color: COLORS.textSoft,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         lineHeight: 18,
-    },
-    offlineContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 15,
-    },
-    offlineText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'LilitaOne',
-        marginBottom: 15,
-    },
-    retryButton: {
-        backgroundColor: '#facc15',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
-        boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
-    },
-    retryButtonText: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'LilitaOne',
     },
 });

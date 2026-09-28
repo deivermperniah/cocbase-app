@@ -12,11 +12,12 @@ import ScreenHeader from '../components/ScreenHeader';
 import SignInPrompt from '../components/SignInPrompt';
 import BaseForm from '../components/BaseForm';
 import InfoBadge from '../components/InfoBadge';
+import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 const STATUS_GROUPS = [
-    { status: 'pending', title: 'En revisión', icon: 'time-outline', color: '#999' },
-    { status: 'approved', title: 'Aprobadas', icon: 'checkmark-circle-outline', color: '#facc15' },
-    { status: 'rejected', title: 'Rechazadas', icon: 'close-circle-outline', color: '#f87171' },
+    { status: 'pending', title: 'En revisión', icon: 'time-outline', color: COLORS.textMuted },
+    { status: 'approved', title: 'Aprobadas', icon: 'checkmark-circle-outline', color: COLORS.primary },
+    { status: 'rejected', title: 'Rechazadas', icon: 'close-circle-outline', color: COLORS.danger },
 ];
 
 function SubmissionItem({ submission, onDelete }) {
@@ -41,7 +42,7 @@ function SubmissionItem({ submission, onDelete }) {
                         accessibilityRole="button"
                         accessibilityLabel="Eliminar base rechazada"
                     >
-                        <Ionicons name="trash-outline" size={18} color="#f87171" />
+                        <Ionicons name="trash-outline" size={18} color={COLORS.danger} />
                         <Text style={styles.deleteText}>Eliminar</Text>
                     </TouchableOpacity>
                 </View>
@@ -146,14 +147,12 @@ export default function ContributeScreen() {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={handleRefresh}
-                            colors={['#facc15']}
-                            tintColor="#facc15"
-                            progressBackgroundColor="#1a1a1a"
+                            {...REFRESH_CONTROL_THEME}
                         />
                     }
                 >
                     <View style={styles.notice}>
-                        <Ionicons name="information-circle-outline" size={20} color="#facc15" />
+                        <Ionicons name="information-circle-outline" size={20} color={COLORS.primary} />
                         <Text style={styles.noticeText}>
                             Revisa que la base no esté repetida y que la captura sea clara. Las bases aprobadas aparecen para todos.
                         </Text>
@@ -164,7 +163,7 @@ export default function ContributeScreen() {
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>Mis envíos</Text>
                         {loadingSubmissions ? (
-                            <ActivityIndicator color="#facc15" style={styles.submissionsLoader} />
+                            <ActivityIndicator color={COLORS.primary} style={styles.submissionsLoader} />
                         ) : submissions.length > 0 ? (
                             <View style={styles.submissions}>
                                 <SubmissionGroups submissions={submissions} onDelete={handleDelete} />
@@ -182,7 +181,7 @@ export default function ContributeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     flex: {
         flex: 1,
@@ -196,26 +195,26 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 15,
         borderRadius: 12,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderWidth: 1,
         borderColor: 'rgba(250, 204, 21, 0.2)',
     },
     noticeText: {
         flex: 1,
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         lineHeight: 18,
     },
     card: {
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         borderRadius: 12,
         padding: 15,
     },
     cardTitle: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 18,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         marginBottom: 5,
     },
     submissionsLoader: {
@@ -235,14 +234,14 @@ const styles = StyleSheet.create({
     },
     groupTitle: {
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textTransform: 'uppercase',
     },
     submission: {
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#333',
-        backgroundColor: '#2a2a2a',
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surfaceAlt,
         overflow: 'hidden',
     },
     submissionRejected: {
@@ -263,13 +262,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(239, 68, 68, 0.15)',
     },
     noteLabel: {
-        color: '#f87171',
+        color: COLORS.danger,
     },
     noteText: {
         flex: 1,
-        color: '#fca5a5',
+        color: COLORS.dangerSoft,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     deleteButton: {
         flexDirection: 'row',
@@ -278,24 +277,24 @@ const styles = StyleSheet.create({
         height: 36,
         paddingHorizontal: 14,
         borderRadius: 8,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
     },
     deleteText: {
-        color: '#f87171',
+        color: COLORS.danger,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     dateText: {
         flex: 1,
         textAlign: 'right',
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     emptyText: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
         paddingVertical: 20,
     },

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { registerDialogPresenter } from '../lib/dialogs';
+import { COLORS, FONT } from '../lib/theme';
 
 export default function DialogProvider({ children }) {
     const [dialog, setDialog] = useState(null);
@@ -33,7 +34,7 @@ export default function DialogProvider({ children }) {
                         {shown && (
                             <>
                                 <View style={[styles.iconCircle, isConfirm && styles.iconCircleDanger]}>
-                                    <Ionicons name={shown.icon} size={28} color={isConfirm ? '#f87171' : '#facc15'} />
+                                    <Ionicons name={shown.icon} size={28} color={isConfirm ? COLORS.danger : COLORS.primary} />
                                 </View>
                                 <Text style={styles.title}>{shown.title}</Text>
                                 {shown.message ? <Text style={styles.message}>{shown.message}</Text> : null}
@@ -77,8 +78,8 @@ const styles = StyleSheet.create({
         padding: 24,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#333',
-        backgroundColor: '#1a1a1a',
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surface,
     },
     iconCircle: {
         width: 56,
@@ -93,15 +94,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(248, 113, 113, 0.12)',
     },
     title: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 20,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
     },
     message: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
         lineHeight: 20,
     },
@@ -119,32 +120,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelButton: {
-        backgroundColor: '#2a2a2a',
+        backgroundColor: COLORS.surfaceAlt,
         borderWidth: 1,
-        borderColor: '#333',
+        borderColor: COLORS.border,
     },
     cancelText: {
-        color: '#ccc',
+        color: COLORS.textSoft,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     dangerButton: {
-        backgroundColor: '#dc2626',
+        backgroundColor: COLORS.dangerStrong,
     },
     dangerText: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     primaryButton: {
         flex: 0,
         alignSelf: 'stretch',
         marginTop: 10,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
     },
     primaryText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 15,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
 });

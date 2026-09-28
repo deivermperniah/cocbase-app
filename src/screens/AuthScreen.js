@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { COLORS, FONT } from '../lib/theme';
 
 const MIN_PASSWORD_LENGTH = 6;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -79,7 +80,7 @@ function GlowCard({ children }) {
                         style={StyleSheet.absoluteFill}
                         start={{ x: 0, y: 0.5 }}
                         end={{ x: 1, y: 0.5 }}
-                        colors={['transparent', 'transparent', '#facc15', '#fde047', 'transparent']}
+                        colors={['transparent', 'transparent', COLORS.primary, COLORS.primaryLight, 'transparent']}
                         locations={[0, 0.58, 0.72, 0.8, 0.92]}
                     />
                 </Animated.View>
@@ -96,7 +97,7 @@ function Field({ label, style, ...inputProps }) {
         <View style={styles.field}>
             <Text style={styles.label}>{label}</Text>
             <TextInput
-                placeholderTextColor="#666"
+                placeholderTextColor={COLORS.textSubtle}
                 {...inputProps}
                 style={[styles.input, focused && styles.inputFocused, style]}
                 onFocus={() => setFocused(true)}
@@ -170,7 +171,7 @@ export default function AuthScreen({ navigation }) {
                     accessibilityRole="button"
                     accessibilityLabel="Cerrar"
                 >
-                    <Ionicons name="close" size={28} color="#facc15" />
+                    <Ionicons name="close" size={28} color={COLORS.primary} />
                 </TouchableOpacity>
             </View>
 
@@ -248,7 +249,7 @@ export default function AuthScreen({ navigation }) {
                                 accessibilityRole="button"
                                 accessibilityLabel={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                             >
-                                <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#999" />
+                                <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color={COLORS.textMuted} />
                             </TouchableOpacity>
                         </View>
 
@@ -258,8 +259,8 @@ export default function AuthScreen({ navigation }) {
                             disabled={submitting}
                         >
                             {submitting
-                                ? <ActivityIndicator size="small" color="#000" />
-                                : <Ionicons name={copy.icon} size={18} color="#000" />}
+                                ? <ActivityIndicator size="small" color={COLORS.onPrimary} />
+                                : <Ionicons name={copy.icon} size={18} color={COLORS.onPrimary} />}
                             <Text style={styles.submitButtonText}>{submitting ? copy.submitting : copy.submit}</Text>
                         </TouchableOpacity>
 
@@ -279,7 +280,7 @@ export default function AuthScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: COLORS.background,
     },
     flex: {
         flex: 1,
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
         padding: 1,
         borderRadius: 20,
         overflow: 'hidden',
-        backgroundColor: '#262626',
+        backgroundColor: COLORS.surfaceAlt,
         boxShadow: '0px 20px 40px rgba(250, 204, 21, 0.1)',
     },
     glow: {
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
     },
     card: {
         borderRadius: 19,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: COLORS.surface,
         padding: 24,
         gap: 15,
     },
@@ -327,9 +328,9 @@ const styles = StyleSheet.create({
         height: 64,
     },
     title: {
-        color: '#facc15',
+        color: COLORS.primary,
         fontSize: 28,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     alert: {
         borderRadius: 8,
@@ -339,7 +340,7 @@ const styles = StyleSheet.create({
     },
     alertText: {
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         lineHeight: 18,
     },
     alertError: {
@@ -347,35 +348,35 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
     },
     alertErrorText: {
-        color: '#fca5a5',
+        color: COLORS.dangerSoft,
     },
     alertSuccess: {
         borderColor: 'rgba(250, 204, 21, 0.4)',
         backgroundColor: 'rgba(250, 204, 21, 0.1)',
     },
     alertSuccessText: {
-        color: '#fde047',
+        color: COLORS.primaryLight,
     },
     field: {
         gap: 8,
     },
     label: {
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 12,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     input: {
         height: 44,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#333',
-        backgroundColor: '#2a2a2a',
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surfaceAlt,
         paddingHorizontal: 12,
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 15,
     },
     inputFocused: {
-        borderColor: '#facc15',
+        borderColor: COLORS.primary,
     },
     passwordInput: {
         paddingRight: 44,
@@ -393,25 +394,25 @@ const styles = StyleSheet.create({
         height: 44,
         marginTop: 5,
         borderRadius: 22,
-        backgroundColor: '#facc15',
+        backgroundColor: COLORS.primary,
         boxShadow: '0px 10px 20px rgba(250, 204, 21, 0.1)',
     },
     submitButtonDisabled: {
         opacity: 0.5,
     },
     submitButtonText: {
-        color: '#000',
+        color: COLORS.onPrimary,
         fontSize: 14,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
     },
     switchText: {
         marginTop: 5,
-        color: '#999',
+        color: COLORS.textMuted,
         fontSize: 13,
-        fontFamily: 'LilitaOne',
+        fontFamily: FONT,
         textAlign: 'center',
     },
     switchAction: {
-        color: '#facc15',
+        color: COLORS.primary,
     },
 });
