@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     },
     levelText: {
         color: COLORS.text,
-        fontSize: 15,
+        fontSize: 16,
         fontFamily: FONT,
     },
     skeletonCard: {

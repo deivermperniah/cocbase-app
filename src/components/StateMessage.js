@@ -14,7 +14,7 @@ export default function StateMessage({ icon, iconSet = 'ionicons', message, acti
     return (
         <View style={styles.container}>
             <Icon name={icon} size={40} color={COLORS.primary} />
-            <Text style={[styles.message, actionLabel && styles.messageProminent]}>{message}</Text>
+            <Text style={styles.message}>{message}</Text>
             {actionLabel && (
                 <TouchableOpacity style={styles.button} onPress={onAction}>
                     <Text style={styles.buttonText}>{actionLabel}</Text>
@@ -37,10 +37,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: FONT,
         textAlign: 'center',
-    },
-    messageProminent: {
-        color: COLORS.text,
-        fontSize: 18,
     },
     button: {
         marginTop: 5,

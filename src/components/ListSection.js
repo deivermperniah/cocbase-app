@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
         color: COLORS.textMuted,
         fontSize: 14,
         fontFamily: FONT,
-        textTransform: 'uppercase',
         paddingHorizontal: 5,
     },
     sectionCard: {
