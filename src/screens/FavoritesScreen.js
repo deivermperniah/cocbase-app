@@ -40,7 +40,7 @@ export default function FavoritesScreen() {
 
     const renderContent = () => {
         if (!user) {
-            return <SignInPrompt icon="heart-outline" message="Inicia sesión para guardar tus bases favoritas" />;
+            return <SignInPrompt icon="heart-outline" message="Inicia sesión para guardar tus bases favoritas." />;
         }
 
         if (loading) {
@@ -56,7 +56,7 @@ export default function FavoritesScreen() {
             return (
                 <View style={styles.centerContainer}>
                     <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                    <Text style={styles.messageText}>Error al cargar</Text>
+                    <Text style={styles.messageText}>No se pudo cargar</Text>
                     <TouchableOpacity style={styles.primaryButton} onPress={handleRefresh}>
                         <Text style={styles.primaryButtonText}>Reintentar</Text>
                     </TouchableOpacity>
@@ -87,7 +87,7 @@ export default function FavoritesScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Ionicons name="heart-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>Aún no tienes bases favoritas</Text>
+                        <Text style={styles.emptyText}>Aún no tienes bases favoritas.</Text>
                     </View>
                 }
             />

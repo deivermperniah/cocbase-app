@@ -67,8 +67,8 @@ async function deleteBase(base) {
 
 export async function confirmAndDeleteBase(base) {
     const confirmed = await confirmAction(
-        'Eliminar base',
-        'Esta acción no se puede deshacer',
+        '¿Eliminar esta base?',
+        'Se borrará junto con su imagen y dejará de verse en la app. No se puede deshacer.',
         'Eliminar',
         { icon: 'trash-outline' },
     );
@@ -78,7 +78,7 @@ export async function confirmAndDeleteBase(base) {
         await deleteBase(base);
         return true;
     } catch {
-        showMessage('Eliminar base', 'No se pudo eliminar la base');
+        showMessage('No se pudo eliminar', 'Revisa tu conexión e inténtalo de nuevo.');
         return false;
     }
 }
@@ -114,10 +114,10 @@ export async function fetchImagesPage(offset) {
 
 export async function confirmAndDeleteImage(image, inUse) {
     const confirmed = await confirmAction(
-        'Eliminar imagen',
+        inUse ? '¿Eliminar imagen en uso?' : '¿Eliminar imagen?',
         inUse
-            ? 'Esta imagen la usa una base, que se quedará sin foto. Esta acción no se puede deshacer'
-            : 'Se eliminará la imagen. Esta acción no se puede deshacer',
+            ? 'Una base usa esta imagen y se quedará sin foto. No se puede deshacer.'
+            : 'Ninguna base la usa. No se puede deshacer.',
         'Eliminar',
         { icon: 'trash-outline' },
     );
@@ -126,14 +126,14 @@ export async function confirmAndDeleteImage(image, inUse) {
     if (inUse) {
         const { error } = await supabase.from('bases').update({ url_foto: null }).eq('url_foto', image.url);
         if (error) {
-            showMessage('Eliminar imagen', 'No se pudo desvincular la imagen de su base');
+            showMessage('No se pudo eliminar', 'La imagen sigue vinculada a su base. Inténtalo de nuevo.');
             return false;
         }
     }
 
     const { error } = await supabase.storage.from(BUCKET).remove([image.name]);
     if (error) {
-        showMessage('Eliminar imagen', 'No se pudo eliminar la imagen');
+        showMessage('No se pudo eliminar', 'La imagen sigue guardada. Inténtalo de nuevo.');
         return false;
     }
     return true;

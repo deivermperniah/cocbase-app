@@ -43,7 +43,7 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
     const [submitting, setSubmitting] = useState(false);
 
     const requiresLink = level !== LINK_FREE_LEVEL;
-    const linkError = link.trim() && !getBaseLinkId(link) ? 'Usa un enlace de link.clashofclans.com' : null;
+    const linkError = link.trim() && !getBaseLinkId(link) ? 'Usa un enlace de link.clashofclans.com.' : null;
     const isFormValid = level !== null && type !== null && asset !== null
         && (requiresLink ? Boolean(link.trim()) && !linkError : true);
 
@@ -58,11 +58,11 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
 
         const pickedAsset = result.assets[0];
         if (pickedAsset.mimeType && !ALLOWED_IMAGE_TYPES.includes(pickedAsset.mimeType)) {
-            showMessage('Imagen no válida', 'Solo se permiten imágenes JPG, PNG o WebP');
+            showMessage('Formato no válido', 'Elige una captura en JPG, PNG o WebP.');
             return;
         }
         if (pickedAsset.fileSize && pickedAsset.fileSize > MAX_IMAGE_BYTES) {
-            showMessage('Imagen no válida', 'La imagen no puede superar los 5 MB');
+            showMessage('Imagen muy pesada', 'Elige una captura de 5 MB o menos.');
             return;
         }
         setAsset(pickedAsset);
@@ -82,9 +82,9 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
             resetForm();
             onSubmitted(base);
         } catch (error) {
-            showMessage('No se pudo guardar', error instanceof SubmissionError
+            showMessage('No se pudo enviar', error instanceof SubmissionError
                 ? error.message
-                : 'Error inesperado. Intenta nuevamente');
+                : 'Algo salió mal. Inténtalo de nuevo.');
         } finally {
             setSubmitting(false);
         }

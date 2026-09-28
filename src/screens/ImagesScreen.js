@@ -130,7 +130,7 @@ export default function ImagesScreen() {
             return (
                 <View style={styles.centerContainer}>
                     <Ionicons name="cloud-offline-outline" size={40} color="#facc15" />
-                    <Text style={styles.messageText}>Error al cargar</Text>
+                    <Text style={styles.messageText}>No se pudo cargar</Text>
                     <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
                         <Text style={styles.retryButtonText}>Reintentar</Text>
                     </TouchableOpacity>
@@ -163,7 +163,7 @@ export default function ImagesScreen() {
                 ListEmptyComponent={
                     <View style={styles.empty}>
                         <Ionicons name="images-outline" size={40} color="#facc15" />
-                        <Text style={styles.emptyText}>Sin imágenes</Text>
+                        <Text style={styles.emptyText}>No hay imágenes.</Text>
                     </View>
                 }
             />

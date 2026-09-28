@@ -77,7 +77,7 @@ export default function PanelScreen() {
             return error ? (
                 <View style={styles.statusBox}>
                     <Ionicons name="cloud-offline-outline" size={32} color="#facc15" />
-                    <Text style={styles.statusText}>Error al cargar</Text>
+                    <Text style={styles.statusText}>No se pudo cargar</Text>
                     <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
                         <Text style={styles.retryButtonText}>Reintentar</Text>
                     </TouchableOpacity>

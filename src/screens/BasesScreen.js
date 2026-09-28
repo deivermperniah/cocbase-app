@@ -96,10 +96,10 @@ export default function BasesScreen() {
     const filterOptions = ['Todos', ...BASE_TYPES];
 
     const filterDescriptions = {
-        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas',
-        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno',
-        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar',
-        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro'
+        'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
+        'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
+        'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
+        'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
     };
 
     useEffect(() => {
@@ -158,7 +158,7 @@ export default function BasesScreen() {
             const { data, error } = await query;
 
             if (error) {
-                nextError = /network|fetch/i.test(error.message) ? 'Sin conexión' : 'Error al cargar';
+                nextError = /network|fetch/i.test(error.message) ? 'Sin conexión' : 'No se pudo cargar';
             } else {
                 nextBases = data || [];
             }
@@ -326,8 +326,8 @@ export default function BasesScreen() {
                                     />
                                     <Text style={styles.emptyText}>
                                         {selectedType === 'Todos'
-                                            ? "No hay bases disponibles para este nivel"
-                                            : "No hay bases disponibles para este filtro"}
+                                            ? "Aún no hay bases para este nivel."
+                                            : "No hay bases de este tipo en este nivel."}
                                     </Text>
                                 </View>
                             }

@@ -33,7 +33,7 @@ function SubmissionItem({ submission, onDelete }) {
                 <View style={styles.rejection}>
                     <Text style={styles.noteText} numberOfLines={2}>
                         <Text style={styles.noteLabel}>Motivo: </Text>
-                        {submission.review_note || 'sin especificar'}
+                        {submission.review_note || 'sin indicar'}
                     </Text>
                     <TouchableOpacity
                         style={styles.deleteButton}
@@ -105,13 +105,13 @@ export default function ContributeScreen() {
 
     const handleSubmitted = (submission) => {
         setSubmissions(previous => [submission, ...previous]);
-        showMessage('¡Base registrada!', 'Tu base quedó en revisión. Un administrador la revisará pronto');
+        showMessage('¡Base enviada!', 'Un administrador la revisará. Puedes ver su estado en Mis envíos.');
     };
 
     const handleDelete = async (submission) => {
         const confirmed = await confirmAction(
-            'Eliminar base',
-            `Se eliminará ${submission.code} de tus envíos. Esta acción no se puede deshacer`,
+            '¿Eliminar este envío?',
+            'Se quitará de Mis envíos. No se puede deshacer.',
             'Eliminar',
             { icon: 'trash-outline' },
         );
@@ -121,7 +121,7 @@ export default function ContributeScreen() {
             await deleteRejectedSubmission(submission.id);
             setSubmissions(previous => previous.filter(item => item.id !== submission.id));
         } catch (error) {
-            showMessage('Eliminar base', error.message);
+            showMessage('No se pudo eliminar', error.message);
         }
     };
 
@@ -129,7 +129,7 @@ export default function ContributeScreen() {
         return (
             <SafeAreaView style={styles.container} edges={['top']}>
                 <ScreenHeader title="Contribuir" subtitle="Comparte tu diseño con la comunidad" />
-                <SignInPrompt icon="add-circle-outline" message="Inicia sesión para compartir tus bases" />
+                <SignInPrompt icon="add-circle-outline" message="Inicia sesión para compartir tus bases." />
             </SafeAreaView>
         );
     }
@@ -155,7 +155,7 @@ export default function ContributeScreen() {
                     <View style={styles.notice}>
                         <Ionicons name="information-circle-outline" size={20} color="#facc15" />
                         <Text style={styles.noticeText}>
-                            Revisa que la base no esté repetida y que la captura sea clara. Las bases aprobadas aparecen para todos
+                            Revisa que la base no esté repetida y que la captura sea clara. Las bases aprobadas aparecen para todos.
                         </Text>
                     </View>
 
@@ -170,7 +170,7 @@ export default function ContributeScreen() {
                                 <SubmissionGroups submissions={submissions} onDelete={handleDelete} />
                             </View>
                         ) : (
-                            <Text style={styles.emptyText}>Aún no has enviado bases</Text>
+                            <Text style={styles.emptyText}>Aún no has enviado bases.</Text>
                         )}
                     </View>
                 </ScrollView>
