@@ -7,13 +7,9 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(null);
     const [profile, setProfile] = useState(null);
-    const [initializing, setInitializing] = useState(true);
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data }) => {
-            setSession(data.session);
-            setInitializing(false);
-        });
+        supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
             setSession(nextSession);
@@ -48,7 +44,6 @@ export function AuthProvider({ children }) {
         user: session?.user ?? null,
         profile,
         isAdmin: profile?.role === ADMIN_ROLE,
-        initializing,
         signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
         signUp: (fullName, email, password) => supabase.auth.signUp({
             email,
@@ -59,7 +54,7 @@ export function AuthProvider({ children }) {
             },
         }),
         signOut: () => supabase.auth.signOut({ scope: 'local' }),
-    }), [session, profile, initializing]);
+    }), [session, profile]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
