@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { registerDialogPresenter } from '../lib/dialogs';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON } from '../lib/theme';
 
 export default function DialogProvider({ children }) {
     const [dialog, setDialog] = useState(null);
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10,
         padding: 24,
-        borderRadius: 20,
+        borderRadius: RADIUS.lg,
         borderWidth: 1,
         borderColor: COLORS.border,
         backgroundColor: COLORS.surface,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         marginBottom: 4,
-        borderRadius: 28,
+        borderRadius: RADIUS.pill,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(250, 204, 21, 0.1)',
@@ -95,16 +95,16 @@ const styles = StyleSheet.create({
     },
     title: {
         color: COLORS.text,
-        fontSize: 20,
+        fontSize: FONT_SIZE.heading,
         fontFamily: FONT,
         textAlign: 'center',
     },
     message: {
         color: COLORS.textMuted,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
         textAlign: 'center',
-        lineHeight: 20,
+        lineHeight: 22,
     },
     actions: {
         flexDirection: 'row',
@@ -113,11 +113,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     button: {
+        ...BUTTON,
         flex: 1,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     cancelButton: {
         backgroundColor: COLORS.surfaceAlt,
@@ -126,7 +123,7 @@ const styles = StyleSheet.create({
     },
     cancelText: {
         color: COLORS.textSoft,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     dangerButton: {
@@ -134,7 +131,7 @@ const styles = StyleSheet.create({
     },
     dangerText: {
         color: COLORS.text,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     primaryButton: {
@@ -145,7 +142,7 @@ const styles = StyleSheet.create({
     },
     primaryText: {
         color: COLORS.onPrimary,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
 });

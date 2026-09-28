@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, BUTTON } from '../lib/theme';
 
 const ICON_SETS = {
     ionicons: Ionicons,
@@ -34,21 +34,19 @@ const styles = StyleSheet.create({
     },
     message: {
         color: COLORS.textMuted,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
         textAlign: 'center',
     },
     button: {
+        ...BUTTON,
         marginTop: 5,
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
         backgroundColor: COLORS.primary,
         boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
     },
     buttonText: {
         color: COLORS.onPrimary,
-        fontSize: 14,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
 });

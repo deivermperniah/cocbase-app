@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Image } from 'expo-image';
 import { isNewBase } from '../lib/format';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS } from '../lib/theme';
 
 function IconButton({ icon, label, onPress }) {
     return (
@@ -73,7 +73,7 @@ export default memo(BaseCard);
 const styles = StyleSheet.create({
     baseCard: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         marginBottom: 15,
         overflow: 'hidden',
     },
@@ -92,13 +92,13 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        borderRadius: 5,
+        borderRadius: RADIUS.sm,
         boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.3)',
     },
     newBadgeText: {
         color: COLORS.onPrimary,
         fontFamily: FONT,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
     },
     baseInfo: {
         padding: 15,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 36,
         backgroundColor: COLORS.primary,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 36,
         backgroundColor: COLORS.border,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     copyButtonText: {
         color: COLORS.onPrimary,
         fontFamily: FONT,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
     },
     disabledButtonText: {
         color: COLORS.textMuted,

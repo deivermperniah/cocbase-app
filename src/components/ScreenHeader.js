@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE } from '../lib/theme';
 
 export default function ScreenHeader({ title, subtitle }) {
     return (
@@ -22,13 +22,13 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: COLORS.primary,
-        fontSize: 28,
+        fontSize: FONT_SIZE.display,
         marginBottom: 5,
         fontFamily: FONT,
     },
     headerSubtitle: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
 });

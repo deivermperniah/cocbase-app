@@ -2,7 +2,7 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE } from '../lib/theme';
 
 export default function DetailHeader({ title, onBack, right, bordered = true }) {
     const navigation = useNavigation();
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     title: {
         flexShrink: 1,
         color: COLORS.primary,
-        fontSize: 18,
+        fontSize: FONT_SIZE.title,
         fontFamily: FONT,
     },
 });

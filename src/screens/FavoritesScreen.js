@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
@@ -10,7 +10,8 @@ import BaseCard from '../components/BaseCard';
 import BaseActionsSheet from '../components/BaseActionsSheet';
 import ImageZoomModal from '../components/ImageZoomModal';
 import StateMessage from '../components/StateMessage';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import BaseListSkeleton from '../components/BaseListSkeleton';
+import { COLORS, REFRESH_CONTROL_THEME } from '../lib/theme';
 
 export default function FavoritesScreen() {
     const { user, isAdmin } = useAuth();
@@ -45,12 +46,7 @@ export default function FavoritesScreen() {
         }
 
         if (loading) {
-            return (
-                <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
-                    <Text style={styles.loadingText}>Cargando...</Text>
-                </View>
-            );
+            return <BaseListSkeleton label="Cargando favoritos" />;
         }
 
         if (error && favorites.length === 0) {
@@ -112,18 +108,6 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-    },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 15,
-    },
-    loadingText: {
-        color: COLORS.text,
-        marginTop: 10,
-        fontFamily: FONT,
-        fontSize: 16,
     },
     basesList: {
         flexGrow: 1,

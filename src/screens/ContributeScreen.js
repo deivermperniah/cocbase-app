@@ -12,7 +12,7 @@ import ScreenHeader from '../components/ScreenHeader';
 import SignInPrompt from '../components/SignInPrompt';
 import BaseForm from '../components/BaseForm';
 import InfoBadge from '../components/InfoBadge';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
 
 const STATUS_GROUPS = [
     { status: 'pending', title: 'En revisión', icon: 'time-outline', color: COLORS.textMuted },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 10,
         padding: 15,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.surface,
         borderWidth: 1,
         borderColor: 'rgba(250, 204, 21, 0.2)',
@@ -202,18 +202,18 @@ const styles = StyleSheet.create({
     noticeText: {
         flex: 1,
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         lineHeight: 18,
     },
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         padding: 15,
     },
     cardTitle: {
         color: COLORS.primary,
-        fontSize: 18,
+        fontSize: FONT_SIZE.title,
         fontFamily: FONT,
         marginBottom: 5,
     },
@@ -233,12 +233,11 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     groupTitle: {
-        fontSize: 13,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
-        textTransform: 'uppercase',
     },
     submission: {
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         borderWidth: 1,
         borderColor: COLORS.border,
         backgroundColor: COLORS.surfaceAlt,
@@ -267,7 +266,7 @@ const styles = StyleSheet.create({
     noteText: {
         flex: 1,
         color: COLORS.dangerSoft,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     deleteButton: {
@@ -276,24 +275,24 @@ const styles = StyleSheet.create({
         gap: 6,
         height: 36,
         paddingHorizontal: 14,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         backgroundColor: COLORS.surface,
     },
     deleteText: {
         color: COLORS.danger,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     dateText: {
         flex: 1,
         textAlign: 'right',
         color: COLORS.textMuted,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     emptyText: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         textAlign: 'center',
         paddingVertical: 20,

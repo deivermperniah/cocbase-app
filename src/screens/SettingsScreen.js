@@ -8,7 +8,7 @@ import { confirmAction } from '../lib/dialogs';
 import { WEB_URL } from '../lib/constants';
 import ScreenHeader from '../components/ScreenHeader';
 import { ListRow, ListSection, listStyles } from '../components/ListSection';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS } from '../lib/theme';
 
 function ProfileHeader({ name, email, isAdmin, isLast }) {
     return (
@@ -88,14 +88,14 @@ const styles = StyleSheet.create({
     avatar: {
         width: 48,
         height: 48,
-        borderRadius: 24,
+        borderRadius: RADIUS.pill,
         backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     avatarText: {
         color: COLORS.onPrimary,
-        fontSize: 22,
+        fontSize: FONT_SIZE.heading,
         fontFamily: FONT,
     },
     profileInfo: {
@@ -110,28 +110,28 @@ const styles = StyleSheet.create({
     profileName: {
         flexShrink: 1,
         color: COLORS.text,
-        fontSize: 18,
+        fontSize: FONT_SIZE.title,
         fontFamily: FONT,
     },
     profileEmail: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     roleBadge: {
         paddingHorizontal: 8,
         paddingVertical: 2,
-        borderRadius: 5,
+        borderRadius: RADIUS.sm,
         backgroundColor: 'rgba(250, 204, 21, 0.15)',
     },
     roleBadgeText: {
         color: COLORS.primary,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     disclaimer: {
-        color: COLORS.textSubtle,
-        fontSize: 12,
+        color: COLORS.textMuted,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
         textAlign: 'center',
         lineHeight: 16,

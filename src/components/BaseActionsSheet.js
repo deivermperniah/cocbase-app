@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showMessage } from '../lib/dialogs';
 import { getBaseTypeIcon } from '../lib/constants';
 import InfoBadge from './InfoBadge';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON } from '../lib/theme';
 
 const DEFAULT_DESIGNER = 'Deiver Pernia';
 
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     },
     group: {
         backgroundColor: COLORS.surfaceAlt,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         overflow: 'hidden',
     },
     detailRow: {
@@ -152,13 +152,13 @@ const styles = StyleSheet.create({
     },
     detailLabel: {
         color: COLORS.textMuted,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     detailValue: {
         flexShrink: 1,
         color: COLORS.text,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     actionRow: {
@@ -169,19 +169,16 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
     },
     actionLabel: {
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     closeButton: {
-        height: 48,
-        borderRadius: 24,
+        ...BUTTON,
         backgroundColor: COLORS.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     closeButtonText: {
         color: COLORS.onPrimary,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
 });

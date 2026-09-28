@@ -13,7 +13,8 @@ import DetailHeader from '../components/DetailHeader';
 import ImageZoomModal from '../components/ImageZoomModal';
 import InfoBadge from '../components/InfoBadge';
 import StateMessage from '../components/StateMessage';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import BaseListSkeleton from '../components/BaseListSkeleton';
+import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS, BUTTON, INPUT } from '../lib/theme';
 
 function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
     const authorName = base.profiles?.full_name || 'Sin nombre';
@@ -84,6 +85,7 @@ function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
 
 function RejectModal({ base, onCancel, onConfirm }) {
     const [note, setNote] = useState('');
+    const [noteFocused, setNoteFocused] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -103,11 +105,13 @@ function RejectModal({ base, onCancel, onConfirm }) {
                     <Text style={styles.modalTitle}>Rechazar base</Text>
                     <Text style={styles.modalLabel}>Motivo (opcional)</Text>
                     <TextInput
-                        style={styles.noteInput}
+                        style={[styles.noteInput, noteFocused && styles.noteInputFocused]}
+                        onFocus={() => setNoteFocused(true)}
+                        onBlur={() => setNoteFocused(false)}
                         value={note}
                         onChangeText={setNote}
                         placeholder="Ej: la captura no corresponde a la base"
-                        placeholderTextColor={COLORS.textSubtle}
+                        placeholderTextColor={COLORS.placeholder}
                         multiline
                         maxLength={200}
                         editable={!submitting}
@@ -194,11 +198,7 @@ export default function ReviewScreen() {
 
     const renderContent = () => {
         if (loading) {
-            return (
-                <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
-                </View>
-            );
+            return <BaseListSkeleton label="Cargando bases pendientes" />;
         }
 
         if (error && pending.length === 0) {
@@ -251,12 +251,6 @@ const styles = StyleSheet.create({
     flex: {
         flex: 1,
     },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 15,
-    },
     list: {
         padding: 15,
         gap: 15,
@@ -264,7 +258,7 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         overflow: 'hidden',
     },
     image: {
@@ -300,25 +294,25 @@ const styles = StyleSheet.create({
     avatar: {
         width: 38,
         height: 38,
-        borderRadius: 19,
+        borderRadius: RADIUS.pill,
         backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
     },
     avatarText: {
         color: COLORS.primary,
-        fontSize: 17,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     authorName: {
         flex: 1,
         color: COLORS.text,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     date: {
         color: COLORS.textMuted,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     actions: {
@@ -332,7 +326,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 6,
         height: 36,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
     },
     actionDisabled: {
         opacity: 0.6,
@@ -342,7 +336,7 @@ const styles = StyleSheet.create({
     },
     approveText: {
         color: COLORS.onPrimary,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     rejectButton: {
@@ -350,54 +344,54 @@ const styles = StyleSheet.create({
     },
     rejectText: {
         color: COLORS.danger,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     linkButton: {
         width: 44,
         height: 36,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    },
+    noteInputFocused: {
+        borderColor: COLORS.primary,
     },
     modalContent: {
-        width: '90%',
+        width: '100%',
         maxWidth: 420,
-        backgroundColor: COLORS.surface,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: 'rgba(239, 68, 68, 0.2)',
-        padding: 20,
         gap: 10,
+        padding: 24,
+        borderRadius: RADIUS.lg,
+        borderWidth: 1,
+        borderColor: 'rgba(239, 68, 68, 0.3)',
+        backgroundColor: COLORS.surface,
     },
     modalTitle: {
-        color: COLORS.primary,
-        fontSize: 20,
+        color: COLORS.text,
+        fontSize: FONT_SIZE.heading,
         fontFamily: FONT,
         textAlign: 'center',
         marginBottom: 5,
     },
     modalLabel: {
         color: COLORS.textMuted,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     noteInput: {
+        ...INPUT,
+        height: undefined,
         minHeight: 90,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        backgroundColor: COLORS.surfaceAlt,
-        padding: 12,
-        color: COLORS.text,
-        fontSize: 15,
+        paddingVertical: 12,
         textAlignVertical: 'top',
     },
     modalActions: {
@@ -406,11 +400,8 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     modalButton: {
+        ...BUTTON,
         flex: 1,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     cancelButton: {
         backgroundColor: COLORS.surfaceAlt,
@@ -419,7 +410,7 @@ const styles = StyleSheet.create({
     },
     cancelText: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     confirmRejectButton: {
@@ -427,7 +418,7 @@ const styles = StyleSheet.create({
     },
     confirmRejectText: {
         color: COLORS.text,
-        fontSize: 14,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
 });

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated from 'react-native-reanimated';
 import usePulseStyle from './usePulseStyle';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS } from '../lib/theme';
 
 function BadgeSkeleton() {
     const pulseStyle = usePulseStyle();
@@ -58,13 +58,13 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         paddingHorizontal: 5,
     },
     sectionCard: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         overflow: 'hidden',
     },
     row: {
@@ -77,20 +77,20 @@ const styles = StyleSheet.create({
     rowLabel: {
         flex: 1,
         color: COLORS.text,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     rowValue: {
         flexShrink: 1,
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     badge: {
         minWidth: 24,
         height: 24,
         paddingHorizontal: 7,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     },
     badgeText: {
         color: COLORS.onPrimary,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     badgeTextEmpty: {

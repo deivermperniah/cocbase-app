@@ -7,7 +7,8 @@ import { confirmAndDeleteImage, fetchImagesPage, fetchUsedImageUrls } from '../l
 import DetailHeader from '../components/DetailHeader';
 import ImageZoomModal from '../components/ImageZoomModal';
 import StateMessage from '../components/StateMessage';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import BaseListSkeleton from '../components/BaseListSkeleton';
+import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
 
 function formatMegabytes(bytes) {
     return (bytes / (1024 * 1024)).toFixed(2);
@@ -121,11 +122,7 @@ export default function ImagesScreen() {
 
     const renderContent = () => {
         if (loading) {
-            return (
-                <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
-                </View>
-            );
+            return <BaseListSkeleton imageHeight={180} label="Cargando imágenes" />;
         }
 
         if (error && images.length === 0) {
@@ -183,12 +180,6 @@ const styles = StyleSheet.create({
     flex: {
         flex: 1,
     },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 15,
-    },
     list: {
         padding: 15,
         gap: 15,
@@ -205,7 +196,7 @@ const styles = StyleSheet.create({
     },
     statText: {
         color: COLORS.text,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     footerLoader: {
@@ -213,7 +204,7 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         overflow: 'hidden',
     },
     image: {
@@ -227,7 +218,7 @@ const styles = StyleSheet.create({
         left: 10,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        borderRadius: 5,
+        borderRadius: RADIUS.sm,
     },
     usageBadgeInUse: {
         backgroundColor: COLORS.primary,
@@ -236,7 +227,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.dangerStrong,
     },
     usageText: {
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     usageTextInUse: {
@@ -254,13 +245,13 @@ const styles = StyleSheet.create({
     imageName: {
         flex: 1,
         color: COLORS.text,
-        fontSize: 15,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     deleteButton: {
         width: 44,
         height: 36,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         backgroundColor: COLORS.border,
         justifyContent: 'center',
         alignItems: 'center',

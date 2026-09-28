@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Modal, BackHandler, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
-import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BASE_COLUMNS, supabase } from '../lib/supabase';
@@ -15,9 +14,9 @@ import DetailHeader, { DetailHeaderButton } from '../components/DetailHeader';
 import BaseCard from '../components/BaseCard';
 import BaseActionsSheet from '../components/BaseActionsSheet';
 import ImageZoomModal from '../components/ImageZoomModal';
-import usePulseStyle from '../components/usePulseStyle';
 import StateMessage from '../components/StateMessage';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import BaseListSkeleton from '../components/BaseListSkeleton';
+import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS, BUTTON } from '../lib/theme';
 
 const townHallImages = {
     3: require('../../assets/images/townhalls/th3.webp'),
@@ -63,30 +62,6 @@ const FILTER_DESCRIPTIONS = {
     'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
     'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
 };
-
-function BaseCardSkeleton() {
-    return (
-        <View style={styles.skeletonCard}>
-            <View style={styles.skeletonImage} />
-            <View style={styles.skeletonButtons}>
-                <View style={[styles.skeletonBlock, styles.skeletonCopy]} />
-                <View style={[styles.skeletonBlock, styles.skeletonIcon]} />
-                <View style={[styles.skeletonBlock, styles.skeletonIcon]} />
-            </View>
-        </View>
-    );
-}
-
-function BasesSkeleton() {
-    const pulseStyle = usePulseStyle();
-
-    return (
-        <Animated.View style={[styles.basesList, pulseStyle]} accessibilityLabel="Cargando bases">
-            <BaseCardSkeleton />
-            <BaseCardSkeleton />
-        </Animated.View>
-    );
-}
 
 export default function BasesScreen() {
     const navigation = useNavigation();
@@ -226,6 +201,7 @@ export default function BasesScreen() {
                                             isActive && styles.filterButtonActive
                                         ]}
                                         onPress={() => setSelectedType(type)}
+                                        hitSlop={{ top: 5, bottom: 5 }}
                                     >
                                         {type !== 'Todos' && (
                                             <MaterialCommunityIcons
@@ -270,7 +246,7 @@ export default function BasesScreen() {
             ) : (
                 <View style={styles.selectedContainer}>
                     {loading ? (
-                        <BasesSkeleton />
+                        <BaseListSkeleton label="Cargando bases" />
                     ) : errorText ? (
                         <StateMessage
                             icon="cloud-offline-outline"
@@ -323,7 +299,7 @@ export default function BasesScreen() {
                 onRequestClose={() => setInfoModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { width: '90%', maxHeight: '80%' }]}>
+                    <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Tipos de bases</Text>
 
                         <ScrollView style={styles.infoScroll} showsVerticalScrollIndicator={false}>
@@ -361,17 +337,17 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingHorizontal: 15,
-        paddingTop: 15,
+        paddingVertical: 15,
     },
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        gap: 15,
     },
     card: {
-        width: '48%',
-        marginBottom: 15,
-        borderRadius: 12,
+        flexBasis: '40%',
+        flexGrow: 1,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.surface,
         overflow: 'hidden',
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)',
@@ -388,39 +364,13 @@ const styles = StyleSheet.create({
         bottom: 10,
         alignItems: 'center',
         paddingVertical: 6,
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         backgroundColor: 'rgba(10, 10, 10, 0.75)',
     },
     levelText: {
         color: COLORS.text,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
-    },
-    skeletonCard: {
-        backgroundColor: COLORS.surface,
-        borderRadius: 12,
-        marginBottom: 15,
-        overflow: 'hidden',
-    },
-    skeletonImage: {
-        height: 200,
-        backgroundColor: COLORS.surfaceAlt,
-    },
-    skeletonButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        padding: 15,
-    },
-    skeletonBlock: {
-        height: 36,
-        borderRadius: 8,
-        backgroundColor: COLORS.surfaceAlt,
-    },
-    skeletonCopy: {
-        flex: 1,
-    },
-    skeletonIcon: {
-        width: 44,
     },
     filterContainer: {
         backgroundColor: COLORS.background,
@@ -438,7 +388,7 @@ const styles = StyleSheet.create({
         gap: 6,
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
+        borderRadius: RADIUS.lg,
         backgroundColor: COLORS.surface,
     },
     filterButtonActive: {
@@ -448,7 +398,7 @@ const styles = StyleSheet.create({
     filterText: {
         color: COLORS.textMuted,
         fontFamily: FONT,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
     },
     filterTextActive: {
         color: COLORS.onPrimary,
@@ -465,32 +415,37 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContent: {
-        backgroundColor: COLORS.surface,
-        borderRadius: 20,
-        padding: 15,
+        width: '100%',
+        maxWidth: 420,
+        maxHeight: '80%',
         alignItems: 'center',
-        width: '80%',
+        gap: 10,
+        padding: 24,
+        borderRadius: RADIUS.lg,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        backgroundColor: COLORS.surface,
     },
     modalTitle: {
-        color: COLORS.primary,
-        fontSize: 18,
+        color: COLORS.text,
+        fontSize: FONT_SIZE.heading,
         fontFamily: FONT,
-        marginBottom: 5,
     },
     modalButton: {
+        ...BUTTON,
+        alignSelf: 'stretch',
+        marginTop: 10,
         backgroundColor: COLORS.primary,
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 25,
     },
     modalButtonText: {
         color: COLORS.onPrimary,
-        fontSize: 14,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     infoScroll: {
@@ -505,13 +460,13 @@ const styles = StyleSheet.create({
     },
     infoTypeTitle: {
         color: COLORS.primary,
-        fontSize: 18,
+        fontSize: FONT_SIZE.title,
         fontFamily: FONT,
         marginBottom: 5,
     },
     infoTypeDescription: {
         color: COLORS.textSoft,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         lineHeight: 18,
     },

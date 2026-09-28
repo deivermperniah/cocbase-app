@@ -12,7 +12,7 @@ import {
     getBaseLinkId,
     submitBase,
 } from '../lib/baseSubmission';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON, INPUT } from '../lib/theme';
 
 const LINK_FREE_LEVEL = 3;
 
@@ -26,6 +26,7 @@ function ChipSelector({ options, selected, onSelect, disabled, renderLabel = Str
                         key={option}
                         style={[styles.chip, isActive && styles.chipActive]}
                         onPress={() => onSelect(option)}
+                        hitSlop={{ top: 5, bottom: 5 }}
                         disabled={disabled}
                     >
                         <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{renderLabel(option)}</Text>
@@ -40,6 +41,7 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
     const [level, setLevel] = useState(null);
     const [type, setType] = useState(null);
     const [link, setLink] = useState('');
+    const [linkFocused, setLinkFocused] = useState(false);
     const [asset, setAsset] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -111,9 +113,11 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
                 <>
                     <Text style={styles.label}>Link</Text>
                     <TextInput
-                        style={[styles.input, linkError && styles.inputError]}
+                        style={[styles.input, linkFocused && styles.inputFocused, linkError && styles.inputError]}
+                        onFocus={() => setLinkFocused(true)}
+                        onBlur={() => setLinkFocused(false)}
                         placeholder="https://link.clashofclans.com/..."
-                        placeholderTextColor={COLORS.textSubtle}
+                        placeholderTextColor={COLORS.placeholder}
                         value={link}
                         onChangeText={setLink}
                         autoCapitalize="none"
@@ -173,18 +177,18 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
 const styles = StyleSheet.create({
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         padding: 15,
     },
     cardTitle: {
         color: COLORS.primary,
-        fontSize: 18,
+        fontSize: FONT_SIZE.title,
         fontFamily: FONT,
         marginBottom: 5,
     },
     label: {
         color: COLORS.textMuted,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         marginTop: 15,
         marginBottom: 8,
@@ -195,7 +199,7 @@ const styles = StyleSheet.create({
     chip: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
+        borderRadius: RADIUS.lg,
         backgroundColor: COLORS.surfaceAlt,
     },
     chipActive: {
@@ -204,27 +208,23 @@ const styles = StyleSheet.create({
     chipText: {
         color: COLORS.textMuted,
         fontFamily: FONT,
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
     },
     chipTextActive: {
         color: COLORS.onPrimary,
     },
     input: {
-        backgroundColor: COLORS.surfaceAlt,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        paddingHorizontal: 15,
-        paddingVertical: 12,
-        color: COLORS.text,
-        fontSize: 16,
+        ...INPUT,
+    },
+    inputFocused: {
+        borderColor: COLORS.primary,
     },
     inputError: {
         borderColor: COLORS.danger,
     },
     errorText: {
         color: COLORS.danger,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
         marginTop: 6,
     },
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 4,
         paddingVertical: 25,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         borderWidth: 2,
         borderStyle: 'dashed',
         borderColor: COLORS.border,
@@ -241,18 +241,18 @@ const styles = StyleSheet.create({
     },
     imagePickerTitle: {
         color: COLORS.text,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     imagePickerHint: {
         color: COLORS.textMuted,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     preview: {
         width: '100%',
         height: 180,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.surfaceAlt,
     },
     changeImageBadge: {
@@ -261,12 +261,12 @@ const styles = StyleSheet.create({
         left: 10,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        borderRadius: 5,
+        borderRadius: RADIUS.sm,
         backgroundColor: 'rgba(10, 10, 10, 0.7)',
     },
     changeImageText: {
         color: COLORS.text,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     removeImageButton: {
@@ -275,19 +275,14 @@ const styles = StyleSheet.create({
         right: 10,
         width: 32,
         height: 32,
-        borderRadius: 16,
+        borderRadius: RADIUS.pill,
         backgroundColor: 'rgba(10, 10, 10, 0.7)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     submitButton: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 8,
+        ...BUTTON,
         marginTop: 20,
-        paddingVertical: 14,
-        borderRadius: 25,
         backgroundColor: COLORS.primary,
         boxShadow: '0px 2px 4px rgba(250, 204, 21, 0.3)',
     },
@@ -296,7 +291,7 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         color: COLORS.onPrimary,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
 });

@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, FONT } from '../lib/theme';
+import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON, INPUT } from '../lib/theme';
 
 const MIN_PASSWORD_LENGTH = 6;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,7 +97,7 @@ function Field({ label, style, ...inputProps }) {
         <View style={styles.field}>
             <Text style={styles.label}>{label}</Text>
             <TextInput
-                placeholderTextColor={COLORS.textSubtle}
+                placeholderTextColor={COLORS.placeholder}
                 {...inputProps}
                 style={[styles.input, focused && styles.inputFocused, style]}
                 onFocus={() => setFocused(true)}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
         maxWidth: 420,
         alignSelf: 'center',
         padding: 1,
-        borderRadius: 20,
+        borderRadius: RADIUS.lg,
         overflow: 'hidden',
         backgroundColor: COLORS.surfaceAlt,
         boxShadow: '0px 20px 40px rgba(250, 204, 21, 0.1)',
@@ -329,17 +329,17 @@ const styles = StyleSheet.create({
     },
     title: {
         color: COLORS.primary,
-        fontSize: 28,
+        fontSize: FONT_SIZE.display,
         fontFamily: FONT,
     },
     alert: {
-        borderRadius: 8,
+        borderRadius: RADIUS.sm,
         borderWidth: 1,
         paddingHorizontal: 12,
         paddingVertical: 10,
     },
     alertText: {
-        fontSize: 13,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
         lineHeight: 18,
     },
@@ -362,18 +362,11 @@ const styles = StyleSheet.create({
     },
     label: {
         color: COLORS.textMuted,
-        fontSize: 12,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
     },
     input: {
-        height: 44,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        backgroundColor: COLORS.surfaceAlt,
-        paddingHorizontal: 12,
-        color: COLORS.text,
-        fontSize: 15,
+        ...INPUT,
     },
     inputFocused: {
         borderColor: COLORS.primary,
@@ -387,13 +380,8 @@ const styles = StyleSheet.create({
         bottom: 13,
     },
     submitButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-        height: 44,
+        ...BUTTON,
         marginTop: 5,
-        borderRadius: 22,
         backgroundColor: COLORS.primary,
         boxShadow: '0px 10px 20px rgba(250, 204, 21, 0.1)',
     },
@@ -402,13 +390,13 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         color: COLORS.onPrimary,
-        fontSize: 14,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     switchText: {
         marginTop: 5,
         color: COLORS.textMuted,
-        fontSize: 13,
+        fontSize: FONT_SIZE.caption,
         fontFamily: FONT,
         textAlign: 'center',
     },

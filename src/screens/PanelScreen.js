@@ -11,7 +11,7 @@ import ScreenHeader from '../components/ScreenHeader';
 import { ListRow, ListSection } from '../components/ListSection';
 import usePulseStyle from '../components/usePulseStyle';
 import StateMessage from '../components/StateMessage';
-import { COLORS, FONT, REFRESH_CONTROL_THEME } from '../lib/theme';
+import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
 
 function StatCard({ type, count }) {
     return (
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.surface,
     },
     skeleton: {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     skeletonLine: {
-        borderRadius: 6,
+        borderRadius: RADIUS.sm,
         backgroundColor: COLORS.surfaceAlt,
     },
     skeletonHeroValue: {
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     },
     hero: {
         height: 140,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         justifyContent: 'center',
         alignItems: 'center',
         boxShadow: '0px 10px 20px rgba(250, 204, 21, 0.15)',
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     heroLabel: {
         color: 'rgba(0, 0, 0, 0.6)',
-        fontSize: 14,
+        fontSize: FONT_SIZE.small,
         fontFamily: FONT,
     },
     statsGrid: {
@@ -221,26 +221,26 @@ const styles = StyleSheet.create({
         width: '48%',
         padding: 15,
         gap: 4,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: COLORS.surface,
     },
     statIcon: {
         width: 44,
         height: 44,
         marginBottom: 8,
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         backgroundColor: 'rgba(250, 204, 21, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     statLabel: {
         color: COLORS.text,
-        fontSize: 16,
+        fontSize: FONT_SIZE.body,
         fontFamily: FONT,
     },
     statValue: {
         color: COLORS.primary,
-        fontSize: 28,
+        fontSize: FONT_SIZE.display,
         fontFamily: FONT,
     },
 });
