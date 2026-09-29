@@ -67,6 +67,7 @@ function MainTabs() {
           fontFamily: FONT,
         },
         headerShown: false,
+        lazy: false,
       })}
     >
       <Tab.Screen name="Bases" component={BasesScreen} />
