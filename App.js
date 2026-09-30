@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import DialogProvider from './src/components/DialogProvider';
 import BasesScreen from './src/screens/BasesScreen';
+import BaseListScreen from './src/screens/BaseListScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import ContributeScreen from './src/screens/ContributeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -86,9 +87,10 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.background } }}>
       <Stack.Screen name="Tabs" component={MainTabs} />
+      <Stack.Screen name="BaseList" component={BaseListScreen} options={{ animation: 'none' }} />
       <Stack.Screen name="Auth" component={AuthScreen} options={{ presentation: 'modal' }} />
       {isAdmin && (
-        <Stack.Group>
+        <Stack.Group screenOptions={{ animation: 'none' }}>
           <Stack.Screen name="NewBase" component={NewBaseScreen} />
           <Stack.Screen name="Review" component={ReviewScreen} />
           <Stack.Screen name="Images" component={ImagesScreen} />
