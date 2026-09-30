@@ -15,6 +15,7 @@ import ImageZoomModal from '../components/ImageZoomModal';
 import StateMessage from '../components/StateMessage';
 import BaseListSkeleton from '../components/BaseListSkeleton';
 import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS, BUTTON } from '../lib/theme';
+import { CARD_MIN_WIDTH, useGrid } from '../lib/layout';
 
 const FILTER_OPTIONS = ['Todos', ...BASE_TYPES];
 
@@ -38,6 +39,7 @@ export default function BaseListScreen() {
     const [errorText, setErrorText] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [zoomImage, setZoomImage] = useState(null);
+    const { columns, itemWidth, onLayout } = useGrid(CARD_MIN_WIDTH);
 
     useEffect(() => {
         fetchBases();
@@ -86,18 +88,21 @@ export default function BaseListScreen() {
         }
     }, [favoriteIds, refreshFavorites]);
 
-    const renderBaseItem = useCallback(({ item }) => (
-        <BaseCard
-            base={item}
-            isFavorite={favoriteIds.has(item.id)}
-            onToggleFavorite={handleToggleFavorite}
-            onPressImage={setZoomImage}
-            onOpenActions={setActionsBase}
-        />
-    ), [favoriteIds, handleToggleFavorite]);
+    const renderBaseItem = useCallback(({ item }) => {
+        const card = (
+            <BaseCard
+                base={item}
+                isFavorite={favoriteIds.has(item.id)}
+                onToggleFavorite={handleToggleFavorite}
+                onPressImage={setZoomImage}
+                onOpenActions={setActionsBase}
+            />
+        );
+        return itemWidth ? <View style={{ width: itemWidth }}>{card}</View> : card;
+    }, [favoriteIds, handleToggleFavorite, itemWidth]);
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
 
             <View>
                 <DetailHeader
@@ -110,6 +115,7 @@ export default function BaseListScreen() {
                         />
                     }
                     bordered={false}
+                   
                 />
 
                 <View style={styles.filterContainer}>
@@ -151,7 +157,7 @@ export default function BaseListScreen() {
 
             </View>
 
-            <View style={styles.selectedContainer}>
+            <View style={styles.selectedContainer} onLayout={onLayout}>
                 {loading ? (
                     <BaseListSkeleton label="Cargando bases" />
                 ) : errorText ? (
@@ -163,9 +169,12 @@ export default function BaseListScreen() {
                     />
                 ) : (
                     <FlatList
+                        key={columns}
                         data={filteredBases}
                         renderItem={renderBaseItem}
                         keyExtractor={item => item.id}
+                        numColumns={columns}
+                        columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
                         contentContainerStyle={styles.basesList}
                         showsVerticalScrollIndicator={false}
                         initialNumToRender={10}
@@ -201,6 +210,7 @@ export default function BaseListScreen() {
             <Modal
                 transparent={true}
                 visible={infoModalVisible}
+                supportedOrientations={['portrait', 'landscape']}
                 animationType="fade"
                 onRequestClose={() => setInfoModalVisible(false)}
             >
@@ -278,6 +288,9 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         paddingLeft: 15,
         paddingRight: 15,
+    },
+    gridRow: {
+        gap: 15,
     },
     modalOverlay: {
         flex: 1,

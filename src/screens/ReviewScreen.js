@@ -15,6 +15,7 @@ import InfoBadge from '../components/InfoBadge';
 import StateMessage from '../components/StateMessage';
 import BaseListSkeleton from '../components/BaseListSkeleton';
 import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS, BUTTON, INPUT } from '../lib/theme';
+import { CARD_MIN_WIDTH, useGrid } from '../lib/layout';
 
 function PendingCard({ base, busy, onApprove, onReject, onPressImage }) {
     const authorName = base.profiles?.full_name || 'Sin nombre';
@@ -99,7 +100,7 @@ function RejectModal({ base, onCancel, onConfirm }) {
     };
 
     return (
-        <Modal transparent visible={base !== null} animationType="fade" onRequestClose={onCancel}>
+        <Modal transparent visible={base !== null} animationType="fade" supportedOrientations={['portrait', 'landscape']} onRequestClose={onCancel}>
             <KeyboardAvoidingView style={styles.modalOverlay} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>Rechazar base</Text>
@@ -140,6 +141,7 @@ export default function ReviewScreen() {
     const [busyId, setBusyId] = useState(null);
     const [rejectingBase, setRejectingBase] = useState(null);
     const [zoomImage, setZoomImage] = useState(null);
+    const { columns, itemWidth, onLayout } = useGrid(CARD_MIN_WIDTH);
 
     const fetchPending = useCallback(async () => {
         const { data, error: fetchError } = await supabase
@@ -186,15 +188,18 @@ export default function ReviewScreen() {
         }
     };
 
-    const renderItem = useCallback(({ item }) => (
-        <PendingCard
-            base={item}
-            busy={busyId === item.id}
-            onApprove={handleApprove}
-            onReject={setRejectingBase}
-            onPressImage={setZoomImage}
-        />
-    ), [busyId, handleApprove]);
+    const renderItem = useCallback(({ item }) => {
+        const card = (
+            <PendingCard
+                base={item}
+                busy={busyId === item.id}
+                onApprove={handleApprove}
+                onReject={setRejectingBase}
+                onPressImage={setZoomImage}
+            />
+        );
+        return itemWidth ? <View style={{ width: itemWidth }}>{card}</View> : card;
+    }, [busyId, handleApprove, itemWidth]);
 
     const renderContent = () => {
         if (loading) {
@@ -214,9 +219,12 @@ export default function ReviewScreen() {
 
         return (
             <FlatList
+                key={columns}
                 data={pending}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
+                numColumns={columns}
+                columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -234,9 +242,9 @@ export default function ReviewScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
             <DetailHeader title="Comunidad" />
-            <View style={styles.flex}>{renderContent()}</View>
+            <View style={styles.flex} onLayout={onLayout}>{renderContent()}</View>
             <RejectModal base={rejectingBase} onCancel={() => setRejectingBase(null)} onConfirm={handleConfirmReject} />
             <ImageZoomModal uri={zoomImage} onClose={() => setZoomImage(null)} />
         </SafeAreaView>
@@ -255,6 +263,9 @@ const styles = StyleSheet.create({
         padding: 15,
         gap: 15,
         flexGrow: 1,
+    },
+    gridRow: {
+        gap: 15,
     },
     card: {
         backgroundColor: COLORS.surface,

@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { TOWN_HALL_LEVELS } from '../lib/constants';
 import ScreenHeader from '../components/ScreenHeader';
 import { COLORS, FONT, FONT_SIZE, RADIUS } from '../lib/theme';
+import { useGrid } from '../lib/layout';
 
 const townHallImages = {
     3: require('../../assets/images/townhalls/th3.webp'),
@@ -26,16 +27,18 @@ const townHallImages = {
     18: require('../../assets/images/townhalls/th18.webp'),
 };
 
-function TownHallCard({ level, onPress }) {
+const MAX_IMAGE_HEIGHT = 200;
+
+function TownHallCard({ level, onPress, width }) {
     return (
         <TouchableOpacity
-            style={styles.card}
+            style={[styles.card, width && { flexBasis: width, flexGrow: 0 }]}
             activeOpacity={0.7}
             onPress={onPress}
             accessibilityRole="button"
             accessibilityLabel={`Nivel ${level}`}
         >
-            <Image source={townHallImages[level]} style={styles.townHallImage} contentFit="cover" />
+            <Image source={townHallImages[level]} style={[styles.townHallImage, width && { height: Math.min(width, MAX_IMAGE_HEIGHT) }]} contentFit="cover" />
             <View style={styles.levelChip}>
                 <Text style={styles.levelText}>Nivel {level}</Text>
             </View>
@@ -45,13 +48,15 @@ function TownHallCard({ level, onPress }) {
 
 export default function BasesScreen() {
     const navigation = useNavigation();
+    const { columns, itemWidth, onLayout } = useGrid(150, { snap: [2, 4, 8] });
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'right']}>
             <ScreenHeader title="Bases" subtitle="Selecciona tu nivel de ayuntamiento" />
 
             <ScrollView
                 style={styles.scrollView}
+                onLayout={onLayout}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
@@ -60,6 +65,7 @@ export default function BasesScreen() {
                         <TownHallCard
                             key={level}
                             level={level}
+                            width={columns > 2 ? itemWidth : undefined}
                             onPress={() => navigation.navigate('BaseList', { level })}
                         />
                     ))}

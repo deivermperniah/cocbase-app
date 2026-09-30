@@ -9,6 +9,7 @@ import ImageZoomModal from '../components/ImageZoomModal';
 import StateMessage from '../components/StateMessage';
 import BaseListSkeleton from '../components/BaseListSkeleton';
 import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
+import { CARD_MIN_WIDTH, useGrid } from '../lib/layout';
 
 function formatMegabytes(bytes) {
     return (bytes / (1024 * 1024)).toFixed(2);
@@ -51,6 +52,7 @@ export default function ImagesScreen() {
     const [error, setError] = useState(false);
     const [zoomImage, setZoomImage] = useState(null);
     const loadingMoreRef = useRef(false);
+    const { columns, itemWidth, onLayout } = useGrid(CARD_MIN_WIDTH);
 
     const loadFirstPage = useCallback(async () => {
         try {
@@ -97,14 +99,17 @@ export default function ImagesScreen() {
         }
     }, [usedUrls]);
 
-    const renderItem = useCallback(({ item }) => (
-        <ImageCard
-            image={item}
-            inUse={usedUrls.has(item.url)}
-            onPressImage={setZoomImage}
-            onDelete={handleDelete}
-        />
-    ), [usedUrls, handleDelete]);
+    const renderItem = useCallback(({ item }) => {
+        const card = (
+            <ImageCard
+                image={item}
+                inUse={usedUrls.has(item.url)}
+                onPressImage={setZoomImage}
+                onDelete={handleDelete}
+            />
+        );
+        return itemWidth ? <View style={{ width: itemWidth }}>{card}</View> : card;
+    }, [usedUrls, handleDelete, itemWidth]);
 
     const totalBytes = images.reduce((sum, image) => sum + image.size, 0);
     const statsHeader = images.length > 0 ? (
@@ -138,9 +143,12 @@ export default function ImagesScreen() {
 
         return (
             <FlatList
+                key={columns}
                 data={images}
                 renderItem={renderItem}
                 keyExtractor={item => item.name}
+                numColumns={columns}
+                columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={statsHeader}
@@ -164,9 +172,9 @@ export default function ImagesScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
             <DetailHeader title="Imágenes" />
-            <View style={styles.flex}>{renderContent()}</View>
+            <View style={styles.flex} onLayout={onLayout}>{renderContent()}</View>
             <ImageZoomModal uri={zoomImage} onClose={() => setZoomImage(null)} />
         </SafeAreaView>
     );
@@ -184,6 +192,9 @@ const styles = StyleSheet.create({
         padding: 15,
         gap: 15,
         flexGrow: 1,
+    },
+    gridRow: {
+        gap: 15,
     },
     stats: {
         flexDirection: 'row',

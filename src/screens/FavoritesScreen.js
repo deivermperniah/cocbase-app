@@ -12,6 +12,7 @@ import ImageZoomModal from '../components/ImageZoomModal';
 import StateMessage from '../components/StateMessage';
 import BaseListSkeleton from '../components/BaseListSkeleton';
 import { COLORS, REFRESH_CONTROL_THEME } from '../lib/theme';
+import { CARD_MIN_WIDTH, useGrid } from '../lib/layout';
 
 export default function FavoritesScreen() {
     const { user, isAdmin } = useAuth();
@@ -19,6 +20,7 @@ export default function FavoritesScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [actionsBase, setActionsBase] = useState(null);
     const [zoomImage, setZoomImage] = useState(null);
+    const { columns, itemWidth, onLayout } = useGrid(CARD_MIN_WIDTH);
 
     const handleRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -30,15 +32,18 @@ export default function FavoritesScreen() {
         if (await confirmAndDeleteBase(base)) refresh();
     }, [refresh]);
 
-    const renderBaseItem = useCallback(({ item }) => (
-        <BaseCard
-            base={item}
-            isFavorite={favoriteIds.has(item.id)}
-            onToggleFavorite={toggleFavorite}
-            onPressImage={setZoomImage}
-            onOpenActions={setActionsBase}
-        />
-    ), [favoriteIds, toggleFavorite]);
+    const renderBaseItem = useCallback(({ item }) => {
+        const card = (
+            <BaseCard
+                base={item}
+                isFavorite={favoriteIds.has(item.id)}
+                onToggleFavorite={toggleFavorite}
+                onPressImage={setZoomImage}
+                onOpenActions={setActionsBase}
+            />
+        );
+        return itemWidth ? <View style={{ width: itemWidth }}>{card}</View> : card;
+    }, [favoriteIds, toggleFavorite, itemWidth]);
 
     const renderContent = () => {
         if (!user) {
@@ -62,9 +67,12 @@ export default function FavoritesScreen() {
 
         return (
             <FlatList
+                key={columns}
                 data={favorites}
                 renderItem={renderBaseItem}
                 keyExtractor={item => item.id}
+                numColumns={columns}
+                columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
                 contentContainerStyle={styles.basesList}
                 showsVerticalScrollIndicator={false}
                 initialNumToRender={10}
@@ -86,9 +94,9 @@ export default function FavoritesScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'right']}>
             <ScreenHeader title="Favoritos" subtitle="Tus bases guardadas" />
-            <View style={styles.content}>
+            <View style={styles.content} onLayout={onLayout}>
                 {renderContent()}
             </View>
             <BaseActionsSheet
@@ -114,5 +122,8 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         paddingLeft: 15,
         paddingRight: 15,
+    },
+    gridRow: {
+        gap: 15,
     },
 });
