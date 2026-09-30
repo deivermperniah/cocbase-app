@@ -9,6 +9,7 @@ import { WEB_URL } from '../lib/constants';
 import ScreenHeader from '../components/ScreenHeader';
 import { ListRow, ListSection, listStyles } from '../components/ListSection';
 import { COLORS, FONT, FONT_SIZE, RADIUS } from '../lib/theme';
+import { COLUMN_MIN_WIDTH, useGrid } from '../lib/layout';
 
 function ProfileHeader({ name, email, isAdmin, isLast }) {
     return (
@@ -34,6 +35,8 @@ function ProfileHeader({ name, email, isAdmin, isLast }) {
 export default function SettingsScreen() {
     const navigation = useNavigation();
     const { user, profile, isAdmin, signOut } = useAuth();
+    const { columns, onLayout } = useGrid(COLUMN_MIN_WIDTH);
+    const split = columns > 1;
 
     const confirmSignOut = async () => {
         if (await confirmAction('¿Cerrar sesión?', 'Tus favoritos quedan guardados en tu cuenta.', 'Cerrar sesión', { icon: 'log-out-outline' })) {
@@ -44,23 +47,29 @@ export default function SettingsScreen() {
     const openWeb = (path) => Linking.openURL(`${WEB_URL}${path}`).catch(() => {});
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'right']}>
             <ScreenHeader title="Ajustes" subtitle="Cuenta y aplicación" />
-            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-                <ListSection title="Cuenta">
-                    {user ? [
-                        <ProfileHeader key="profile" name={profile?.full_name || 'Usuario'} email={user.email} isAdmin={isAdmin} />,
-                        <ListRow key="signOut" icon="log-out-outline" label="Cerrar sesión" onPress={confirmSignOut} />,
-                    ] : (
-                        <ListRow icon="log-in-outline" label="Iniciar sesión" onPress={() => navigation.navigate('Auth')} />
-                    )}
-                </ListSection>
+            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} onLayout={onLayout}>
+                <View style={[styles.sections, split && styles.sectionsSplit]}>
+                    <View style={split && styles.column}>
+                        <ListSection title="Cuenta">
+                            {user ? [
+                                <ProfileHeader key="profile" name={profile?.full_name || 'Usuario'} email={user.email} isAdmin={isAdmin} />,
+                                <ListRow key="signOut" icon="log-out-outline" label="Cerrar sesión" onPress={confirmSignOut} />,
+                            ] : (
+                                <ListRow icon="log-in-outline" label="Iniciar sesión" onPress={() => navigation.navigate('Auth')} />
+                            )}
+                        </ListSection>
+                    </View>
 
-                <ListSection title="Información">
-                    <ListRow icon="information-circle-outline" label="Versión" value={Constants.expoConfig?.version} />
-                    <ListRow icon="document-text-outline" label="Aviso legal" onPress={() => openWeb('/aviso-legal')} />
-                    <ListRow icon="shield-checkmark-outline" label="Privacidad" onPress={() => openWeb('/privacidad')} />
-                </ListSection>
+                    <View style={split && styles.column}>
+                        <ListSection title="Información">
+                            <ListRow icon="information-circle-outline" label="Versión" value={Constants.expoConfig?.version} />
+                            <ListRow icon="document-text-outline" label="Aviso legal" onPress={() => openWeb('/aviso-legal')} />
+                            <ListRow icon="shield-checkmark-outline" label="Privacidad" onPress={() => openWeb('/privacidad')} />
+                        </ListSection>
+                    </View>
+                </View>
 
                 <Text style={styles.disclaimer}>
                     Clash of Clans es una marca registrada de Supercell Oy. cocbase es un proyecto de la comunidad y no está afiliado, patrocinado ni respaldado por Supercell.
@@ -78,6 +87,17 @@ const styles = StyleSheet.create({
     content: {
         padding: 15,
         gap: 20,
+    },
+    sections: {
+        gap: 20,
+    },
+    sectionsSplit: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 15,
+    },
+    column: {
+        flex: 1,
     },
     profile: {
         flexDirection: 'row',

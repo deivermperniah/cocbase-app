@@ -12,6 +12,7 @@ import { ListRow, ListSection } from '../components/ListSection';
 import usePulseStyle from '../components/usePulseStyle';
 import StateMessage from '../components/StateMessage';
 import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
+import { COLUMN_MIN_WIDTH, useGrid } from '../lib/layout';
 
 function StatCard({ type, count }) {
     return (
@@ -52,6 +53,8 @@ export default function PanelScreen() {
     const [stats, setStats] = useState(null);
     const [error, setError] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const { columns, onLayout } = useGrid(COLUMN_MIN_WIDTH);
+    const split = columns > 1;
 
     const loadStats = useCallback(async () => {
         try {
@@ -112,11 +115,12 @@ export default function PanelScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'right']}>
             <ScreenHeader title="Panel" subtitle="Administración de cocbase" />
             <ScrollView
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
+                onLayout={onLayout}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -125,19 +129,25 @@ export default function PanelScreen() {
                     />
                 }
             >
-                {renderStats()}
+                <View style={[styles.layout, split && styles.layoutSplit]}>
+                    <View style={[styles.stack, split && styles.column]}>
+                        {renderStats()}
+                    </View>
 
-                <ListSection title="Gestión">
-                    <ListRow icon="add-circle-outline" label="Nueva base" onPress={() => navigation.navigate('NewBase')} />
-                    <ListRow
-                        icon="people-outline"
-                        label="Comunidad"
-                        badge={stats?.pending}
-                        badgeLoading={!stats && !error}
-                        onPress={() => navigation.navigate('Review')}
-                    />
-                    <ListRow icon="images-outline" label="Imágenes" onPress={() => navigation.navigate('Images')} />
-                </ListSection>
+                    <View style={split && styles.column}>
+                        <ListSection title="Gestión">
+                            <ListRow icon="add-circle-outline" label="Nueva base" onPress={() => navigation.navigate('NewBase')} />
+                            <ListRow
+                                icon="people-outline"
+                                label="Comunidad"
+                                badge={stats?.pending}
+                                badgeLoading={!stats && !error}
+                                onPress={() => navigation.navigate('Review')}
+                            />
+                            <ListRow icon="images-outline" label="Imágenes" onPress={() => navigation.navigate('Images')} />
+                        </ListSection>
+                    </View>
+                </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -151,6 +161,19 @@ const styles = StyleSheet.create({
     content: {
         padding: 15,
         gap: 15,
+    },
+    layout: {
+        gap: 15,
+    },
+    layoutSplit: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    stack: {
+        gap: 15,
+    },
+    column: {
+        flex: 1,
     },
     statusBox: {
         height: 200,

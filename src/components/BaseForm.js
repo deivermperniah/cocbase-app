@@ -13,6 +13,7 @@ import {
     submitBase,
 } from '../lib/baseSubmission';
 import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON, INPUT } from '../lib/theme';
+import { COLUMN_MIN_WIDTH, useGrid } from '../lib/layout';
 
 const LINK_FREE_LEVEL = 3;
 
@@ -44,6 +45,8 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
     const [linkFocused, setLinkFocused] = useState(false);
     const [asset, setAsset] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const { columns, onLayout } = useGrid(COLUMN_MIN_WIDTH);
+    const split = columns > 1;
 
     const requiresLink = level !== LINK_FREE_LEVEL;
     const linkError = link.trim() && !getBaseLinkId(link) ? 'Usa un enlace de link.clashofclans.com.' : null;
@@ -94,82 +97,88 @@ export default function BaseForm({ userId, publish = false, onSubmitted }) {
     };
 
     return (
-        <View style={styles.card}>
+        <View style={styles.card} onLayout={onLayout}>
             <Text style={styles.cardTitle}>Nueva base</Text>
 
-            <Text style={styles.label}>Nivel</Text>
-            <ChipSelector
-                options={TOWN_HALL_LEVELS}
-                selected={level}
-                onSelect={selectLevel}
-                disabled={submitting}
-                renderLabel={value => `Nivel ${value}`}
-            />
-
-            <Text style={styles.label}>Categoría</Text>
-            <ChipSelector options={BASE_TYPES} selected={type} onSelect={setType} disabled={submitting} />
-
-            {requiresLink && (
-                <>
-                    <Text style={styles.label}>Link</Text>
-                    <TextInput
-                        style={[styles.input, linkFocused && styles.inputFocused, linkError && styles.inputError]}
-                        onFocus={() => setLinkFocused(true)}
-                        onBlur={() => setLinkFocused(false)}
-                        placeholder="https://link.clashofclans.com/..."
-                        placeholderTextColor={COLORS.placeholder}
-                        value={link}
-                        onChangeText={setLink}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        keyboardType="url"
-                        editable={!submitting}
+            <View style={split && styles.columns}>
+                <View style={split && styles.column}>
+                    <Text style={styles.label}>Nivel</Text>
+                    <ChipSelector
+                        options={TOWN_HALL_LEVELS}
+                        selected={level}
+                        onSelect={selectLevel}
+                        disabled={submitting}
+                        renderLabel={value => `Nivel ${value}`}
                     />
-                    {linkError && <Text style={styles.errorText}>{linkError}</Text>}
-                </>
-            )}
 
-            <Text style={styles.label}>Fotografía</Text>
-            {asset ? (
-                <View>
-                    <TouchableOpacity activeOpacity={0.8} onPress={pickImage} disabled={submitting}>
-                        <Image source={{ uri: asset.uri }} style={styles.preview} contentFit="cover" />
-                        <View style={styles.changeImageBadge}>
-                            <Text style={styles.changeImageText}>Cambiar</Text>
-                        </View>
-                    </TouchableOpacity>
-                    {!submitting && (
-                        <TouchableOpacity
-                            style={styles.removeImageButton}
-                            onPress={() => setAsset(null)}
-                            hitSlop={8}
-                            accessibilityRole="button"
-                            accessibilityLabel="Quitar fotografía"
-                        >
-                            <Ionicons name="close" size={18} color={COLORS.text} />
-                        </TouchableOpacity>
+                    <Text style={styles.label}>Categoría</Text>
+                    <ChipSelector options={BASE_TYPES} selected={type} onSelect={setType} disabled={submitting} />
+
+                    {requiresLink && (
+                        <>
+                            <Text style={styles.label}>Link</Text>
+                            <TextInput
+                                style={[styles.input, linkFocused && styles.inputFocused, linkError && styles.inputError]}
+                                onFocus={() => setLinkFocused(true)}
+                                onBlur={() => setLinkFocused(false)}
+                                placeholder="https://link.clashofclans.com/..."
+                                placeholderTextColor={COLORS.placeholder}
+                                value={link}
+                                onChangeText={setLink}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                keyboardType="url"
+                                editable={!submitting}
+                            />
+                            {linkError && <Text style={styles.errorText}>{linkError}</Text>}
+                        </>
                     )}
                 </View>
-            ) : (
-                <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.7} disabled={submitting}>
-                    <Ionicons name="image-outline" size={28} color={COLORS.textMuted} />
-                    <Text style={styles.imagePickerTitle}>Subir captura</Text>
-                    <Text style={styles.imagePickerHint}>JPG, PNG o WebP · máx. 5 MB</Text>
-                </TouchableOpacity>
-            )}
 
-            <TouchableOpacity
-                style={[styles.submitButton, (!isFormValid || submitting) && styles.submitButtonDisabled]}
-                onPress={handleSubmit}
-                disabled={!isFormValid || submitting}
-            >
-                {submitting
-                    ? <ActivityIndicator color={COLORS.onPrimary} />
-                    : <Ionicons name={publish ? 'checkmark-circle-outline' : 'add-circle-outline'} size={20} color={COLORS.onPrimary} />}
-                <Text style={styles.submitButtonText}>
-                    {submitting ? 'Procesando...' : publish ? 'Publicar' : 'Enviar a revisión'}
-                </Text>
-            </TouchableOpacity>
+                <View style={split && styles.column}>
+                    <Text style={styles.label}>Fotografía</Text>
+                    {asset ? (
+                        <View>
+                            <TouchableOpacity activeOpacity={0.8} onPress={pickImage} disabled={submitting}>
+                                <Image source={{ uri: asset.uri }} style={styles.preview} contentFit="cover" />
+                                <View style={styles.changeImageBadge}>
+                                    <Text style={styles.changeImageText}>Cambiar</Text>
+                                </View>
+                            </TouchableOpacity>
+                            {!submitting && (
+                                <TouchableOpacity
+                                    style={styles.removeImageButton}
+                                    onPress={() => setAsset(null)}
+                                    hitSlop={8}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Quitar fotografía"
+                                >
+                                    <Ionicons name="close" size={18} color={COLORS.text} />
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    ) : (
+                        <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.7} disabled={submitting}>
+                            <Ionicons name="image-outline" size={28} color={COLORS.textMuted} />
+                            <Text style={styles.imagePickerTitle}>Subir captura</Text>
+                            <Text style={styles.imagePickerHint}>JPG, PNG o WebP · máx. 5 MB</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity
+                        style={[styles.submitButton, (!isFormValid || submitting) && styles.submitButtonDisabled]}
+                        onPress={handleSubmit}
+                        disabled={!isFormValid || submitting}
+                    >
+                        {submitting
+                            ? <ActivityIndicator color={COLORS.onPrimary} />
+                            : <Ionicons name={publish ? 'checkmark-circle-outline' : 'add-circle-outline'} size={20} color={COLORS.onPrimary} />}
+                        <Text style={styles.submitButtonText}>
+                            {submitting ? 'Procesando...' : publish ? 'Publicar' : 'Enviar a revisión'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
     );
 }
@@ -185,6 +194,13 @@ const styles = StyleSheet.create({
         fontSize: FONT_SIZE.title,
         fontFamily: FONT,
         marginBottom: 5,
+    },
+    columns: {
+        flexDirection: 'row',
+        gap: 20,
+    },
+    column: {
+        flex: 1,
     },
     label: {
         color: COLORS.textMuted,

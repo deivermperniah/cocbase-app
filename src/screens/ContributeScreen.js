@@ -13,6 +13,7 @@ import SignInPrompt from '../components/SignInPrompt';
 import BaseForm from '../components/BaseForm';
 import InfoBadge from '../components/InfoBadge';
 import { COLORS, FONT, REFRESH_CONTROL_THEME, FONT_SIZE, RADIUS } from '../lib/theme';
+import { COLUMN_MIN_WIDTH, useGrid } from '../lib/layout';
 
 const STATUS_GROUPS = [
     { status: 'pending', title: 'En revisión', icon: 'time-outline', color: COLORS.textMuted },
@@ -75,6 +76,8 @@ export default function ContributeScreen() {
     const [submissions, setSubmissions] = useState([]);
     const [loadingSubmissions, setLoadingSubmissions] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const { columns, onLayout } = useGrid(COLUMN_MIN_WIDTH);
+    const split = columns > 1;
 
     const userId = user?.id;
 
@@ -128,7 +131,7 @@ export default function ContributeScreen() {
 
     if (!user) {
         return (
-            <SafeAreaView style={styles.container} edges={['top']}>
+            <SafeAreaView style={styles.container} edges={['top', 'right']}>
                 <ScreenHeader title="Contribuir" subtitle="Comparte tu diseño con la comunidad" />
                 <SignInPrompt icon="add-circle-outline" message="Inicia sesión para compartir tus bases." />
             </SafeAreaView>
@@ -136,13 +139,14 @@ export default function ContributeScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'right']}>
             <ScreenHeader title="Contribuir" subtitle="Comparte tu diseño con la comunidad" />
             <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <ScrollView
                     contentContainerStyle={styles.content}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
+                    onLayout={onLayout}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -151,26 +155,30 @@ export default function ContributeScreen() {
                         />
                     }
                 >
-                    <View style={styles.notice}>
-                        <Ionicons name="information-circle-outline" size={20} color={COLORS.primary} />
-                        <Text style={styles.noticeText}>
-                            Revisa que la base no esté repetida y que la captura sea clara. Las bases aprobadas aparecen para todos.
-                        </Text>
-                    </View>
-
-                    <BaseForm userId={userId} onSubmitted={handleSubmitted} />
-
-                    <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Mis envíos</Text>
-                        {loadingSubmissions ? (
-                            <ActivityIndicator color={COLORS.primary} style={styles.submissionsLoader} />
-                        ) : submissions.length > 0 ? (
-                            <View style={styles.submissions}>
-                                <SubmissionGroups submissions={submissions} onDelete={handleDelete} />
+                    <View style={[styles.layout, split && styles.layoutSplit]}>
+                        <View style={[styles.layout, split && styles.column]}>
+                            <View style={styles.notice}>
+                                <Ionicons name="information-circle-outline" size={20} color={COLORS.primary} />
+                                <Text style={styles.noticeText}>
+                                    Revisa que la base no esté repetida y que la captura sea clara. Las bases aprobadas aparecen para todos.
+                                </Text>
                             </View>
-                        ) : (
-                            <Text style={styles.emptyText}>Aún no has enviado bases.</Text>
-                        )}
+
+                            <BaseForm userId={userId} onSubmitted={handleSubmitted} />
+                        </View>
+
+                        <View style={[styles.card, split && styles.column]}>
+                            <Text style={styles.cardTitle}>Mis envíos</Text>
+                            {loadingSubmissions ? (
+                                <ActivityIndicator color={COLORS.primary} style={styles.submissionsLoader} />
+                            ) : submissions.length > 0 ? (
+                                <View style={styles.submissions}>
+                                    <SubmissionGroups submissions={submissions} onDelete={handleDelete} />
+                                </View>
+                            ) : (
+                                <Text style={styles.emptyText}>Aún no has enviado bases.</Text>
+                            )}
+                        </View>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -189,6 +197,16 @@ const styles = StyleSheet.create({
     content: {
         padding: 15,
         gap: 15,
+    },
+    layout: {
+        gap: 15,
+    },
+    layoutSplit: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    column: {
+        flex: 1,
     },
     notice: {
         flexDirection: 'row',
