@@ -24,6 +24,7 @@ import NewBaseScreen from './src/screens/NewBaseScreen';
 import ReviewScreen from './src/screens/ReviewScreen';
 import ImagesScreen from './src/screens/ImagesScreen';
 import { COLORS, FONT } from './src/lib/theme';
+import { useIsWide } from './src/lib/layout';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,6 +42,7 @@ const TAB_ICONS = {
 function MainTabs() {
   const insets = useSafeAreaInsets();
   const { isAdmin } = useAuth();
+  const isWide = useIsWide();
   const TAB_BAR_HEIGHT = 60;
   const DEFAULT_PADDING_BOTTOM = 10;
   const paddingBottom = insets.bottom > 0 ? insets.bottom + 10 : DEFAULT_PADDING_BOTTOM;
@@ -57,13 +59,21 @@ function MainTabs() {
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textMuted,
-        tabBarStyle: {
-          backgroundColor: COLORS.surfaceDeep,
-          borderTopColor: COLORS.border,
-          height: height,
-          paddingBottom: paddingBottom,
-          paddingTop: 10,
-        },
+        tabBarPosition: isWide ? 'left' : 'bottom',
+        tabBarVariant: isWide ? 'material' : 'uikit',
+        tabBarLabelPosition: isWide ? 'below-icon' : undefined,
+        tabBarStyle: isWide
+          ? {
+            backgroundColor: COLORS.surfaceDeep,
+            borderRightColor: COLORS.border,
+          }
+          : {
+            backgroundColor: COLORS.surfaceDeep,
+            borderTopColor: COLORS.border,
+            height: height,
+            paddingBottom: paddingBottom,
+            paddingTop: 10,
+          },
         tabBarLabelStyle: {
           fontFamily: FONT,
         },
