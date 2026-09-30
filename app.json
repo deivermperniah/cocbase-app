@@ -3,7 +3,7 @@
     "name": "cocbase",
     "slug": "cocbase",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
