@@ -6,6 +6,7 @@ import { showMessage } from '../lib/dialogs';
 import { getBaseTypeIcon } from '../lib/constants';
 import InfoBadge from './InfoBadge';
 import { COLORS, FONT, FONT_SIZE, RADIUS, BUTTON } from '../lib/theme';
+import { useIsWide } from '../lib/layout';
 
 const DEFAULT_DESIGNER = 'Deiver Pernia';
 
@@ -53,6 +54,7 @@ function ActionRow({ icon, label, onPress, danger, isFirst }) {
 
 export default function BaseActionsSheet({ base, onClose, onDelete }) {
     const insets = useSafeAreaInsets();
+    const isWide = useIsWide();
     const lastBase = useRef(base);
     if (base) lastBase.current = base;
     const shownBase = lastBase.current;
@@ -71,9 +73,9 @@ export default function BaseActionsSheet({ base, onClose, onDelete }) {
     };
 
     return (
-        <Modal transparent visible={base !== null} animationType="slide" onRequestClose={onClose}>
+        <Modal transparent visible={base !== null} animationType="slide" supportedOrientations={['portrait', 'landscape']} onRequestClose={onClose}>
             <Pressable style={styles.overlay} onPress={onClose} accessibilityLabel="Cerrar">
-                <Pressable style={[styles.sheet, { paddingBottom: 20 + insets.bottom }]}>
+                <Pressable style={[styles.sheet, isWide && styles.sheetWide, { paddingBottom: 20 + insets.bottom }]}>
                     <View style={styles.handle} />
 
                     {shownBase && (
@@ -119,6 +121,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 10,
         gap: 15,
+    },
+    sheetWide: {
+        width: '100%',
+        maxWidth: 520,
+        alignSelf: 'center',
     },
     handle: {
         alignSelf: 'center',

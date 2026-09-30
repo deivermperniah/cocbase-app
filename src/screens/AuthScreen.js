@@ -162,7 +162,7 @@ export default function AuthScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
             <View style={styles.topBar}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}

@@ -16,7 +16,7 @@ export default function NewBaseScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
             <DetailHeader title="Nueva base" />
             <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <ScrollView

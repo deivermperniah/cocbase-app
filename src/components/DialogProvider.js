@@ -28,7 +28,7 @@ export default function DialogProvider({ children }) {
     return (
         <>
             {children}
-            <Modal transparent visible={dialog !== null} animationType="fade" onRequestClose={() => close(false)}>
+            <Modal transparent visible={dialog !== null} animationType="fade" supportedOrientations={['portrait', 'landscape']} onRequestClose={() => close(false)}>
                 <Pressable style={styles.overlay} onPress={() => close(false)}>
                     <Pressable style={styles.dialog} accessibilityRole="alert">
                         {shown && (

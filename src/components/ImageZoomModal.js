@@ -18,6 +18,7 @@ export default function ImageZoomModal({ uri, onClose }) {
             visible={uri !== null}
             animationType="fade"
             statusBarTranslucent
+            supportedOrientations={['portrait', 'landscape']}
             onRequestClose={onClose}
         >
             <GestureHandlerRootView style={styles.zoomContainer}>
@@ -36,7 +37,7 @@ export default function ImageZoomModal({ uri, onClose }) {
                     />
                 </Zoomable>
                 <TouchableOpacity
-                    style={[styles.zoomCloseButton, { top: insets.top + 15 }]}
+                    style={[styles.zoomCloseButton, { top: insets.top + 15, right: insets.right + 15 }]}
                     onPress={onClose}
                     accessibilityRole="button"
                     accessibilityLabel="Cerrar"
