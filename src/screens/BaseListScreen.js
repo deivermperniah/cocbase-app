@@ -23,7 +23,7 @@ const FILTER_DESCRIPTIONS = {
     'Guerra': 'Bases estratégicas para Guerras de Clanes, enfocadas en evitar que el rival consiga 3 estrellas.',
     'Liga': 'Bases competitivas para Liga de Guerra de Clanes, enfocadas en evitar que el rival consiga pleno.',
     'Mejora': 'Bases de progreso diseñadas para identificar fácilmente qué edificios necesitas mejorar.',
-    'Recursos': 'Diseños de Farming optimizados para la máxima protección de tus almacenes de oro, elixir y oscuro.'
+    'Competitivo': 'Bases defensivas para Batallas Clasificatorias, diseñadas para no perder trofeos, ascender de liga y mantenerte en lo más alto del torneo semanal.'
 };
 
 export default function BaseListScreen() {
