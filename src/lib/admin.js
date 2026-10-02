@@ -7,7 +7,7 @@ const STORAGE_MARKER = `/storage/v1/object/public/${BUCKET}/`;
 const IMAGE_PATTERN = /\.(jpe?g|png|webp)$/i;
 
 const IMAGES_PAGE_SIZE = 24;
-export const REVIEW_COLUMNS = 'id, code, level_th, type, url_foto, link, created_at, profiles!bases_author_id_fkey(full_name)';
+export const REVIEW_COLUMNS = 'id, level_th, type, url_foto, link, created_at, profiles!bases_author_id_fkey(full_name)';
 
 function getStoragePath(publicUrl) {
     const index = publicUrl?.indexOf(STORAGE_MARKER) ?? -1;

@@ -9,7 +9,7 @@ const LINK_PATTERN = /^https:\/\/link\.clashofclans\.com\/\S*[?&]id=([^&\s]+)/i;
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-export const SUBMISSION_COLUMNS = 'id, code, level_th, type, status, review_note, created_at';
+export const SUBMISSION_COLUMNS = 'id, level_th, type, status, review_note, created_at';
 
 export class SubmissionError extends Error {}
 
