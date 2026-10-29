@@ -1,6 +1,15 @@
-# cocbase
+# cocbase · App móvil
 
 App móvil para compartir y descubrir bases de Clash of Clans: sube fotos, guarda tus favoritas y administra el catálogo con roles (usuario / admin).
+
+🔗 Demo: https://cocbase.vercel.app/descargar
+
+## Qué se puede hacer
+
+- **Explorar el catálogo** de bases con su imagen, tipo y descripción.
+- **Guardar favoritos** en el dispositivo, también sin sesión.
+- **Aportar bases** subiendo una foto para que el equipo las revise.
+- **Administrar** aportes, imágenes y usuarios desde el panel (rol admin).
 
 ## Stack
 
