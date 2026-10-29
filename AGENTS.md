@@ -52,8 +52,8 @@ No agregar tests, linters, TypeScript ni notificaciones push salvo que se pida e
 
 ## Git y commits
 
-- No ejecutar comandos de git (add, commit, push, branch, etc.) bajo ninguna circunstancia. Nunca.
-- Si se pide agrupar cambios para commit: proponer grupos por tema + mensaje, sin ejecutar git.
+- Commits pequeños, uno por cambio, solo cuando el usuario lo pida.
+- Nunca hacer push, crear ramas ni reescribir el historial sin que se pida.
 - Formato: `<tipo>: <descripción breve en inglés, minúsculas, imperativo>`.
 - Tipos permitidos: feat, fix, style, refactor, chore, docs.
 - Máximo ~60 caracteres, sin punto final.
