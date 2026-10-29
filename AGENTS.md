@@ -10,6 +10,7 @@
 - Si una tarea puede resolverse tocando un solo archivo o una sola función, hazlo así. No expandas el alcance.
 - No repitas código: antes de crear algo, busca si ya existe en `src/components/` o `src/lib/` y reutilízalo.
 - Si tienes dudas sobre el alcance del cambio, pregunta antes de tocar código adicional — no asumas ni "por si acaso" hagas más.
+- Nada de lógica compleja: prefiere la solución más simple que funcione.
 
 ## Stack
 
