@@ -49,7 +49,7 @@ function TownHallCard({ level, onPress, width }) {
 
 export default function BasesScreen() {
     const navigation = useNavigation();
-    const { columns, itemWidth, onLayout } = useGrid(150, { snap: [2, 4, 8] });
+    const { itemWidth, onLayout } = useGrid(150, { snap: [2, 4, 8] });
 
     return (
         <SafeAreaView style={styles.container} edges={['top', 'right']}>
@@ -66,7 +66,7 @@ export default function BasesScreen() {
                         <TownHallCard
                             key={level}
                             level={level}
-                            width={columns > 2 ? itemWidth : undefined}
+                            width={itemWidth}
                             onPress={() => navigation.navigate('BaseList', { level })}
                         />
                     ))}
