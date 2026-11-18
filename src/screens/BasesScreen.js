@@ -25,6 +25,7 @@ const townHallImages = {
     16: require('../../assets/images/townhalls/th16.webp'),
     17: require('../../assets/images/townhalls/th17.webp'),
     18: require('../../assets/images/townhalls/th18.webp'),
+    19: require('../../assets/images/townhalls/th19.webp'),
 };
 
 const MAX_IMAGE_HEIGHT = 200;

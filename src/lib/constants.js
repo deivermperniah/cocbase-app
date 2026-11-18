@@ -11,7 +11,7 @@ export function getBaseTypeIcon(type) {
     return BASE_TYPE_ICONS[type] ?? BASE_TYPE_ICONS.Competitivo;
 }
 
-export const TOWN_HALL_LEVELS = Array.from({ length: 16 }, (_, i) => i + 3);
+export const TOWN_HALL_LEVELS = Array.from({ length: 17 }, (_, i) => i + 3);
 
 export const WEB_URL = 'https://cocbase.vercel.app';
 
